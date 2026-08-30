@@ -11,12 +11,20 @@
 
   let activeTooltip: { title: string; desc: string } | null = null;
 
-  const stageInfos = [
-    { title: 'Step 1: Bug Reported', desc: 'A user or automated script submits a crash log. AI begins instant intake.', count: '1,248' },
-    { title: 'Step 2: AI Semantic Triage', desc: 'High-dimensional vectors scan Neon Postgres to group duplicate issues.', count: '512' },
-    { title: 'Step 3: Sandbox Reproduction', desc: 'An isolated Docker container runs tests on the exact codebase branch.', count: '320' },
-    { title: 'Step 4: AI Fix Generated', desc: 'Gemini 1.5 Pro analyzes crash logs and drafts a 1-click git patch.', count: '187' },
-    { title: 'Step 5: Approved & Merged', desc: 'Human lead approves the PR with 1-click. Raw logs purged for privacy.', count: '98' }
+  export let tickets: any[] = [];
+
+  $: total = tickets.length;
+  $: triaged = tickets.filter(t => t.status !== 'new').length;
+  $: sandboxed = tickets.filter(t => t.status === 'sandbox_running' || t.status === 'diagnosed' || t.status === 'resolved').length;
+  $: fixed = tickets.filter(t => t.status === 'diagnosed' || t.status === 'resolved').length;
+  $: merged = tickets.filter(t => t.status === 'resolved').length;
+
+  $: stageInfos = [
+    { title: 'Step 1: Bug Reported', desc: 'A user or automated script submits a crash log. AI begins instant intake.', count: total.toString() },
+    { title: 'Step 2: AI Semantic Triage', desc: 'High-dimensional vectors scan Neon Postgres to group duplicate issues.', count: triaged.toString() },
+    { title: 'Step 3: Sandbox Reproduction', desc: 'An isolated Docker container runs tests on the exact codebase branch.', count: sandboxed.toString() },
+    { title: 'Step 4: AI Fix Generated', desc: 'Gemini 1.5 Pro analyzes crash logs and drafts a 1-click git patch.', count: fixed.toString() },
+    { title: 'Step 5: Approved & Merged', desc: 'Human lead approves the PR with 1-click. Raw logs purged for privacy.', count: merged.toString() }
   ];
 
   function selectNode(index: number) {

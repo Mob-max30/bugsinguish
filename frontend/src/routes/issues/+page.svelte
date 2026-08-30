@@ -10,89 +10,26 @@
   let selectedStatusFilter: TicketStatus | 'all' = 'all';
   let selectedSeverityFilter: TicketSeverity | 'all' = 'all';
 
-  let tickets: Ticket[] = [
-    {
-      id: 'BUG-1248',
-      title: 'Users unable to login on iOS app',
-      description: 'Authentication tokens fail to sign on iOS devices with 401 response.',
-      stack_trace: 'Traceback (most recent call last):\n  File "AuthService.java", line 42, in authenticateUser\nNullPointerException: token is null',
-      repo_branch_url: 'iOS App / main',
-      severity: 'critical',
-      status: 'diagnosed',
-      diagnosis: {
-        root_cause: 'Null pointer exception in AuthService.java:42',
-        explanation: 'Tokens expired without refresh handler.',
-        file: 'AuthService.java',
-        diff: '--- AuthService.java\n+++ AuthService.java\n@@ -41,3 +41,5 @@\n+if (token == null) {\n+    throw new AuthException("Token missing");\n+}'
-      },
-      created_at: '2026-08-30 22:00',
-      updated_at: '2026-08-30 22:05'
-    },
-    {
-      id: 'BUG-1247',
-      title: 'Data not syncing across devices',
-      description: 'Background worker pool exhausts connection timeout under load.',
-      stack_trace: 'pgx: connection timeout after 5000ms',
-      repo_branch_url: 'Sync Service / dev',
-      severity: 'high',
-      status: 'sandbox_running',
-      created_at: '2026-08-30 21:45',
-      updated_at: '2026-08-30 21:50'
-    },
-    {
-      id: 'BUG-1246',
-      title: 'Payment gateway timeout error',
-      description: 'CORS header missing on GET /checkout endpoint.',
-      stack_trace: 'Access to fetch blocked by CORS policy',
-      repo_branch_url: 'Web Checkout / main',
-      severity: 'medium',
-      status: 'triaging',
-      created_at: '2026-08-30 21:00',
-      updated_at: '2026-08-30 21:05'
-    },
-    {
-      id: 'BUG-1245',
-      title: 'UI glitch in dark mode contrast',
-      description: 'Contrast on column card headers drops below 3.0 ratio.',
-      stack_trace: '',
-      repo_branch_url: 'Web App / main',
-      severity: 'low',
-      status: 'new',
-      created_at: '2026-08-30 20:30',
-      updated_at: '2026-08-30 20:30'
-    },
-    {
-      id: 'BUG-1244',
-      title: 'Crash on clicking export PDF',
-      description: 'Export engine buffer overflows when rendering large reports.',
-      stack_trace: 'BufferOverflowError: max length 10MB exceeded',
-      repo_branch_url: 'Reports / main',
-      severity: 'critical',
-      status: 'resolved',
-      diagnosis: {
-        root_cause: 'Buffer overflow in PDF exporter',
-        explanation: 'Max page limit unhandled.',
-        file: 'pdf_exporter.go',
-        diff: '--- pdf_exporter.go\n+++ pdf_exporter.go\n@@ -10,3 +10,5 @@\n+if len(buf) > maxLimit {\n+    return ErrLimitExceeded\n+}'
-      },
-      created_at: '2026-08-30 19:00',
-      updated_at: '2026-08-30 19:30'
-    }
-  ];
+  let tickets: Ticket[] = [];
+  let isLoading = true;
 
   async function loadBackendTickets() {
     try {
       const data = await fetchTickets();
-      if (Array.isArray(data) && data.length > 0) {
+      if (Array.isArray(data)) {
         tickets = data;
       }
-    } catch {
-      // Dynamic fallback
+    } catch (e) {
+      console.error('Failed to load tickets', e);
+    } finally {
+      isLoading = false;
     }
   }
 
   onMount(() => {
     loadBackendTickets();
+    const interval = setInterval(loadBackendTickets, 4000);
+    return () => clearInterval(interval);
   });
 
   $: filteredTickets = tickets.filter(t => {
