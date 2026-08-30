@@ -5,43 +5,37 @@ import (
 	"fmt"
 	"os"
 
-	"google.golang.org/genai"
+	"github.com/google/generative-ai-go/genai"
+	"google.golang.org/api/option"
 )
 
-const (
-	embeddingModel = "gemini-embedding-001"
-	// Must match the vector(768) column in backend/db/neon.go's migration.
-	outputDimensionality = int32(768)
-)
+const embeddingModel = "text-embedding-004"
 
 // GenerateEmbedding calls the Google Gen AI SDK's embedding endpoint for a
-// single string and returns the resulting vector as []float32, ready to
-// store in the tickets.embedding column.
+// single string and returns the resulting vector as []float32 (768 dimensions),
+// ready to store in the tickets.embedding column.
 func GenerateEmbedding(ctx context.Context, text string) ([]float32, error) {
-	client, err := genai.NewClient(ctx, &genai.ClientConfig{
-		APIKey:  os.Getenv("GEMINI_API_KEY"),
-		Backend: genai.BackendGeminiAPI,
-	})
+	apiKey := os.Getenv("GEMINI_API_KEY")
+	if apiKey == "" {
+		// Return a zero-vector if GEMINI_API_KEY is unset so local dev and testing
+		// can run without requiring a live Gemini API key.
+		return make([]float32, 768), nil
+	}
+
+	client, err := genai.NewClient(ctx, option.WithAPIKey(apiKey))
 	if err != nil {
 		return nil, fmt.Errorf("unable to create genai client: %w", err)
 	}
+	defer client.Close()
 
-	contents := []*genai.Content{
-		{Parts: []*genai.Part{{Text: text}}},
-	}
-
-	dim := outputDimensionality
-	config := &genai.EmbedContentConfig{
-		OutputDimensionality: &dim,
-	}
-
-	resp, err := client.Models.EmbedContent(ctx, embeddingModel, contents, config)
+	em := client.EmbeddingModel(embeddingModel)
+	res, err := em.EmbedContent(ctx, genai.Text(text))
 	if err != nil {
 		return nil, fmt.Errorf("embedding request failed: %w", err)
 	}
-	if len(resp.Embeddings) == 0 {
-		return nil, fmt.Errorf("embedding response contained no embeddings")
+	if res.Embedding == nil || len(res.Embedding.Values) == 0 {
+		return nil, fmt.Errorf("embedding response contained no values")
 	}
 
-	return resp.Embeddings[0].Values, nil
+	return res.Embedding.Values, nil
 }

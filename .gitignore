@@ -1,0 +1,22 @@
+# Binaries & Executables
+*.exe
+*.exe shadow
+*.dll
+*.so
+*.dylib
+backend/bugsinguish-backend
+
+# Node dependencies
+node_modules/
+dist/
+.svelte-kit/
+
+# Environment Variables & Secrets
+.env
+.env.*
+*.env
+!.env.example
+
+# OS files
+.DS_Store
+Thumbs.db
