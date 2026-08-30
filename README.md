@@ -9,6 +9,18 @@
 
 ---
 
+## 🖥️ Live Platform Screenshots & Dashboard Features
+
+Below are screenshots from our live, working application. All displayed numbers, vector similarity scores, activity logs, and status counts are **dynamically generated** from live database state and test data in the `sandbox/` folder (zero hardcoded static numbers).
+
+![Bugsinguish 3D Resolution Pipeline Dashboard](docs/screenshots/dashboard_top.png)
+*Top Section: KPI Metrics, Three.js 3D Interactive Pipeline Terrain, and AI Triage Overview Donut Chart.*
+
+![Bugsinguish Recent Issues & Live AI Activity Feed](docs/screenshots/dashboard_bottom.png)
+*Bottom Section: Dynamic Recent Issues Table and Real-time AI Activity Feed.*
+
+---
+
 ## 🚀 What is Bugsinguish? (30-Second Elevator Pitch)
 
 Traditional bug trackers like Bugzilla are passive "digital filing cabinets." When something breaks, they store a record of the complaint and wait weeks for a human engineer to manually search through past tickets, reproduce the issue, and write a fix.
@@ -82,14 +94,40 @@ Bugzilla was revolutionary in 1998, but modern software development has outgrown
 2. Developer clicks "Approve & Merge" — platform opens/merges the PR via the GitHub API.
 3. Ticket is marked RESOLVED, and raw code data is purged.
 
-## 🖥️ Dashboard Features
+## ⚡ Quickstart Guide: Running & Accessing the Project
 
-The Bugsinguish dashboard provides a unified view of your project's health and AI triage activities:
-- **KPI Cards:** Track Total Issues, Auto PRs Created, and Mean Time to Resolve.
-- **Resolution Pipeline:** A 3D interactive terrain showing the real-time flow of bugs from report to resolution.
-- **AI Triage Overview:** A visual breakdown of issue states (e.g., Duplicate Grouped, In Progress, Awaiting Review).
-- **Recent Issues:** A categorized list of bugs with their current AI resolution status (e.g., *AI Fix Ready*, *In Progress*, *Duplicate*).
-- **Live AI Activity Feed:** Real-time updates as the AI groups duplicates, creates sandboxes, identifies root causes, and drafts PRs.
+### 1. Live Production Deployment
+* **Backend API (Render):** `https://bugsinguish-api.onrender.com` (Healthcheck: `https://bugsinguish-api.onrender.com/health`)
+* **Database:** Neon Serverless Postgres with `pgvector` enabled
 
-> [!NOTE]
-> **Dynamic Data Display:** The numbers and statistics displayed on the dashboard (such as total issues, resolution rates, etc.) are **not hardcoded**. They are dynamically generated from the test data included in the `sandbox/` folder.
+### 2. Local Environment Setup
+
+#### Prerequisites
+* Node.js v20+ and Go v1.22+
+* Docker Desktop (optional, for sandbox container execution)
+
+#### A. Run the Frontend (SvelteKit 5 UI)
+```bash
+cd frontend
+npm install
+npm run dev
+```
+Open **`http://localhost:5173`** in your browser.
+
+#### B. Run the Backend (Go Server)
+1. Create `backend/.env`:
+```env
+GEMINI_API_KEY=your_gemini_api_key
+DATABASE_URL=postgres://user:password@ep-something.neon.tech/neondb?sslmode=require
+```
+2. Start the server:
+```bash
+cd backend
+go run main.go
+```
+The Go server automatically connects to Neon, enables `pgvector`, migrates the database schema, and starts on port `8080`.
+
+#### C. Run via Docker Compose
+```bash
+docker-compose up --build
+```
