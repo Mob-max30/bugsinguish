@@ -1,8 +1,11 @@
 <script lang="ts">
   import '../app.css';
+  import { page } from '$app/stores';
+
+  $: currentPath = $page.url.pathname;
 
   const navItems = [
-    { label: 'Dashboard', icon: '📊', href: '/', active: true },
+    { label: 'Dashboard', icon: '📊', href: '/' },
     { label: 'Issues', icon: '📋', href: '/issues' },
     { label: 'AI Triage', icon: '⚡', href: '/triage', badge: 'New' },
     { label: 'Sandboxes', icon: '📦', href: '/sandboxes' },
@@ -16,7 +19,7 @@
 
 <div class="min-h-screen flex bg-[#070a12] text-slate-100 font-sans antialiased">
   <!-- Left Sidebar -->
-  <aside class="w-64 border-r border-white/[0.08] bg-[#090d16] flex flex-col justify-between p-4 shrink-0">
+  <aside class="w-64 border-r border-white/[0.08] bg-[#090d16] flex flex-col justify-between p-4 shrink-0 sticky top-0 h-screen">
     <div>
       <!-- Brand Logo Header -->
       <a href="/" class="flex items-center space-x-3 px-2 py-3 mb-6">
@@ -34,10 +37,11 @@
       <!-- Navigation Menu -->
       <nav class="space-y-1">
         {#each navItems as item}
+          {@const isActive = currentPath === item.href}
           <a 
             href={item.href}
             class={`flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-semibold transition ${
-              item.active 
+              isActive 
                 ? 'bg-gradient-to-r from-indigo-600/90 to-purple-600/90 text-white shadow-lg shadow-indigo-500/20' 
                 : 'text-slate-400 hover:text-slate-100 hover:bg-white/[0.04]'
             }`}
