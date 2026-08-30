@@ -1,23 +1,32 @@
 version: '3.8'
 
 services:
-  # frontend:
-  #   build:
-  #     context: ./frontend
-  #   ports:
-  #     - "5173:5173"
-  #   environment:
-  #     - VITE_API_BASE_URL=http://localhost:8080
-  #   volumes:
-  #     - ./frontend:/app
+  frontend:
+    build:
+      context: ./frontend
+    ports:
+      - "5173:5173"
+    environment:
+      - VITE_API_BASE_URL=http://localhost:8080
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    depends_on:
+      - backend
 
-  # backend:
-  #   build:
-  #     context: ./backend
-  #   ports:
-  #     - "8080:8080"
-  #   environment:
-  #     - PORT=8080
-  #     - DATABASE_URL=postgres://user:password@localhost:5432/bugsinguish?sslmode=disable
-  #   volumes:
-  #     - ./backend:/app
+  backend:
+    build:
+      context: ./backend
+    ports:
+      - "8080:8080"
+    environment:
+      - PORT=8080
+      # Neon is a hosted serverless Postgres — no local db container needed,
+      # just point this at your Neon connection string via .env.
+      - DATABASE_URL=${DATABASE_URL}
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+    volumes:
+      - ./backend:/app
+      # Lets Ujwal's sandbox manager (github.com/docker/docker/client) talk
+      # to the host's Docker daemon to spin up dummy_repo containers.
+      - /var/run/docker.sock:/var/run/docker.sock
