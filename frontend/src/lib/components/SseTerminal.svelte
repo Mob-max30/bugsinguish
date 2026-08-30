@@ -5,14 +5,13 @@
   export let isConnected = false;
 
   let logs: Array<{ id: string; text: string; time: string; type?: string }> = [
-    { id: '1', text: '[SYSTEM] Initializing Bugsinguish Realtime Stream...', time: new Date().toLocaleTimeString(), type: 'info' }
+    { id: '1', text: '[SYSTEM] Bugsinguish Realtime Stream Active', time: new Date().toLocaleTimeString(), type: 'info' }
   ];
 
   let cleanupSse: (() => void) | null = null;
   let fallbackInterval: any = null;
 
   onMount(() => {
-    // Attempt real SSE connection to backend
     cleanupSse = createSseListener(
       'http://localhost:8080/api/stream',
       (event) => {
@@ -26,16 +25,14 @@
       }
     );
 
-    // Fallback simulated stream for standalone UI testing
     const sampleMessages = [
-      { text: '[1/4] Checking semantic vector similarity against Neon (pgvector)...', type: 'info' },
-      { text: '[1/4] No duplicate ticket found (similarity score < 0.85 threshold).', type: 'success' },
-      { text: '[2/4] Triggering Docker Sandbox manager (image: Dockerfile.dummy)...', type: 'info' },
-      { text: '[2/4] Spawning isolated container [id: sb-92a10b]...', type: 'info' },
-      { text: '[3/4] Running test suite against branch main...', type: 'warn' },
-      { text: '[3/4] Captured crash output: ZeroDivisionError in calc.py line 14', type: 'error' },
-      { text: '[4/4] Sending crash report & snippet to Gemini 1.5 Pro...', type: 'info' },
-      { text: '[4/4] Root cause analysis completed. Git unified diff generated.', type: 'success' }
+      { text: '[1/4] Semantic Deduplication: Checking vector similarity against Neon (pgvector)...', type: 'info' },
+      { text: '[1/4] Triage Result: No duplicate ticket found (similarity score < 0.85 threshold).', type: 'success' },
+      { text: '[2/4] Ephemeral Sandbox: Spawning Docker container [id: sb-92a10b]...', type: 'info' },
+      { text: '[3/4] Test Reproduction: Running calculator.py test suite against branch main...', type: 'warn' },
+      { text: '[3/4] Captured Exception: ZeroDivisionError in calculator.py line 14', type: 'error' },
+      { text: '[4/4] AI Engine: Sending crash report & repository context to Gemini 1.5 Pro...', type: 'info' },
+      { text: '[4/4] RCA Diagnosis Complete: Unified git patch generated. Draft PR created.', type: 'success' }
     ];
 
     let index = 0;
@@ -46,7 +43,7 @@
         logs = [...logs, { id: Math.random().toString(), text: msg.text, time, type: msg.type }];
         index++;
       }
-    }, 2000);
+    }, 2200);
   });
 
   onDestroy(() => {
@@ -55,26 +52,28 @@
   });
 </script>
 
-<div class="bg-slate-900 border border-slate-800 rounded-lg overflow-hidden shadow-xl font-mono text-sm">
-  <div class="bg-slate-950 px-4 py-2 border-b border-slate-800 flex items-center justify-between">
+<div class="bg-[#0e1320] border border-white/[0.08] rounded-xl overflow-hidden shadow-2xl font-mono text-xs">
+  <!-- Terminal Header -->
+  <div class="bg-[#090d16] px-4 py-2.5 border-b border-white/[0.06] flex items-center justify-between">
     <div class="flex items-center space-x-2">
-      <span class="w-3 h-3 rounded-full bg-rose-500 inline-block"></span>
-      <span class="w-3 h-3 rounded-full bg-amber-500 inline-block"></span>
-      <span class="w-3 h-3 rounded-full bg-emerald-500 inline-block"></span>
-      <span class="text-xs text-slate-400 font-sans ml-2">Live Agent Stream (http://localhost:8080/api/stream)</span>
+      <span class="w-2.5 h-2.5 rounded-full bg-rose-500/80 inline-block"></span>
+      <span class="w-2.5 h-2.5 rounded-full bg-amber-500/80 inline-block"></span>
+      <span class="w-2.5 h-2.5 rounded-full bg-emerald-500/80 inline-block"></span>
+      <span class="text-[11px] text-slate-400 font-sans ml-2 font-medium">Agent Log Stream (/api/stream)</span>
     </div>
-    <div class="flex items-center space-x-2 text-xs">
-      <span class={`w-2 h-2 rounded-full ${isConnected ? 'bg-emerald-400 animate-pulse' : 'bg-amber-500 animate-pulse'}`}></span>
-      <span class="text-slate-400 font-sans">{isConnected ? 'CONNECTED' : 'SIMULATED DEMO'}</span>
+    <div class="flex items-center space-x-2 text-[10px]">
+      <span class={`w-2 h-2 rounded-full ${isConnected ? 'bg-emerald-400 animate-pulse' : 'bg-indigo-400 animate-pulse'}`}></span>
+      <span class="text-slate-400 font-sans font-medium uppercase tracking-wider">{isConnected ? 'LIVE BACKEND' : 'SIMULATED DEMO'}</span>
     </div>
   </div>
 
-  <div class="p-4 h-56 overflow-y-auto space-y-1.5 scrollbar-thin scrollbar-thumb-slate-700">
+  <!-- Terminal Body -->
+  <div class="p-3.5 h-48 overflow-y-auto space-y-1.5 leading-relaxed font-mono">
     {#each logs as log (log.id)}
-      <div class="flex items-start space-x-3 text-xs leading-relaxed">
+      <div class="flex items-start space-x-3 text-[11px]">
         <span class="text-slate-500 shrink-0 select-none">{log.time}</span>
         <span class={
-          log.type === 'success' ? 'text-emerald-400' :
+          log.type === 'success' ? 'text-emerald-400 font-medium' :
           log.type === 'warn' ? 'text-amber-300' :
           log.type === 'error' ? 'text-rose-400' : 'text-slate-300'
         }>

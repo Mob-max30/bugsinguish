@@ -16,12 +16,12 @@
       id: 'BUG-101',
       title: 'ZeroDivisionError in calculator divide operation',
       description: 'Calculator crashes immediately when user inputs 0 as denominator in division function.',
-      stack_trace: 'Traceback (most recent call last):\n  File "test_calc.py", line 12, in test_divide\n    result = divide(10, 0)\n  File "calc.py", line 14, in divide\n    return a / b\nZeroDivisionError: division by zero',
+      stack_trace: 'Traceback (most recent call last):\n  File "test_calculator.py", line 12, in test_divide\n    result = divide(10, 0)\n  File "calculator.py", line 14, in divide\n    return a / b\nZeroDivisionError: division by zero',
       repo_branch_url: 'https://github.com/Mob-max30/bugsinguish/tree/main',
       severity: 'critical',
       status: 'diagnosed',
       diagnosis: {
-        root_cause: 'Missing zero denominator validation in divide() function at calc.py line 14.',
+        root_cause: 'Missing zero denominator validation in divide() function at calculator.py line 14.',
         explanation: 'The divide function accepts integer arguments a and b without checking if b == 0 before performing division operator. This raises ZeroDivisionError unhandled.',
         file: 'sandbox/dummy_repo/calculator.py',
         diff: '--- calculator.py\n+++ calculator.py\n@@ -13,3 +13,5 @@\n def divide(a, b):\n+    if b == 0:\n+        raise ValueError("Cannot divide by zero")\n     return a / b'
@@ -111,22 +111,22 @@
   }
 </script>
 
-<div class="space-y-6">
+<div class="space-y-5">
   <!-- Top Banner -->
-  <div class="flex items-center justify-between">
+  <div class="flex items-center justify-between border-b border-white/[0.06] pb-4">
     <div>
-      <h1 class="text-2xl font-black text-slate-100">Defect Resolution Kanban</h1>
-      <p class="text-sm text-slate-400 mt-1">Autonomous bug triage, sandbox reproduction, and AI root-cause analysis pipeline.</p>
+      <h1 class="text-xl font-bold text-slate-100 tracking-tight">Defect Resolution Kanban</h1>
+      <p class="text-xs text-slate-400 mt-0.5">Autonomous bug triage, sandbox reproduction, and AI root-cause analysis pipeline.</p>
     </div>
     
-    <div class="flex items-center space-x-3 text-xs bg-slate-900 px-4 py-2 rounded-lg border border-slate-800">
-      <span class="text-slate-400">Total Tickets: <strong class="text-white">{tickets.length}</strong></span>
+    <div class="flex items-center space-x-3 text-xs bg-[#0e1320] px-3.5 py-1.5 rounded-lg border border-white/[0.08]">
+      <span class="text-slate-400">Total: <strong class="text-white">{tickets.length}</strong></span>
       <span class="text-slate-600">|</span>
       <span class="text-slate-400">Diagnosed: <strong class="text-indigo-400">{tickets.filter(t => t.status === 'diagnosed').length}</strong></span>
       <span class="text-slate-600">|</span>
-      <span class="flex items-center space-x-1">
-        <span class={`w-2 h-2 rounded-full ${isBackendConnected ? 'bg-emerald-400' : 'bg-amber-400'}`}></span>
-        <span class="text-slate-400">{isBackendConnected ? 'API Live' : 'Demo Mode'}</span>
+      <span class="flex items-center space-x-1.5">
+        <span class={`w-1.5 h-1.5 rounded-full ${isBackendConnected ? 'bg-emerald-400' : 'bg-amber-400'}`}></span>
+        <span class="text-slate-400 text-[11px]">{isBackendConnected ? 'API Live' : 'Demo Mode'}</span>
       </span>
     </div>
   </div>
