@@ -1,5 +1,6 @@
 <script lang="ts">
-  let apiBaseUrl = 'http://localhost:8080';
+  import { API_BASE_URL } from '$lib/api/client';
+  let apiBaseUrl = API_BASE_URL;
   let enableZeroRetention = true;
   let sseReconnectInterval = 1000;
 </script>

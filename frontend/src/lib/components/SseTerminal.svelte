@@ -1,6 +1,7 @@
 <script lang="ts">
   import { onMount, onDestroy } from 'svelte';
   import { createSseListener } from '$lib/api/sse';
+  import { API_BASE_URL } from '$lib/api/client';
 
   export let isConnected = false;
 
@@ -13,7 +14,7 @@
 
   onMount(() => {
     cleanupSse = createSseListener(
-      'http://localhost:8080/api/stream',
+      `${API_BASE_URL}/api/stream`,
       (event) => {
         isConnected = true;
         const text = `[${event.phase || 'EVENT'}] ${event.message || JSON.stringify(event)}`;
