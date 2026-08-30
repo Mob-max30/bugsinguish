@@ -11,6 +11,11 @@ node_modules/
 dist/
 .svelte-kit/
 
+# Environment Variables & Secrets
+.env
+.env.*
+*.env
+
 # OS files
 .DS_Store
 Thumbs.db
