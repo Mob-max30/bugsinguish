@@ -1,14 +1,68 @@
 # Bugsinguish 🐛🔥
 
-> **Autonomous AI Defect Resolution Engine**  
-> *CloneFest Track 2: Developer Tool Reconstruction (Bugzilla)*  
-> **Team:** Pranav (Lead) · Ujwal · Pavan  
-> 🌐 **Live Running Web App:** [https://bugsinguish-phi.vercel.app](https://bugsinguish-phi.vercel.app)  
-> ⚡ **Live Production API:** [https://bugsinguish-api.onrender.com](https://bugsinguish-api.onrender.com)  
+**Deconstructing Bugzilla into an AI-Native Defect Resolution Engine**
+
+*Track 2: Developer Tool Reconstruction – Bugzilla (CloneFest)*
+
+**Team:** Pranav (Lead) · Ujwal · Pavan  
+**Repo:** [https://github.com/Mob-max30/bugsinguish](https://github.com/Mob-max30/bugsinguish)  
+**Live Application:** [https://bugsinguish-phi.vercel.app](https://bugsinguish-phi.vercel.app)
 
 ---
 
-## 📂 Monorepo File Structure & Interconnected Pipeline
+## 🖥️ Live Platform Screenshots & Dashboard Features
+
+Below are screenshots from our live, working application hosted at **[https://bugsinguish-phi.vercel.app](https://bugsinguish-phi.vercel.app)**. All displayed numbers, vector similarity scores, activity logs, and status counts are **dynamically generated** from live database state and test data in the `sandbox/` folder (zero hardcoded static numbers).
+
+![Bugsinguish 3D Resolution Pipeline Dashboard](https://bugsinguish-phi.vercel.app/screenshots/dashboard_top.png)
+*Top Section: KPI Metrics, Three.js 3D Interactive Pipeline Terrain, and AI Triage Overview Donut Chart.*
+
+![Bugsinguish Recent Issues & Live AI Activity Feed](https://bugsinguish-phi.vercel.app/screenshots/dashboard_bottom.png)
+*Bottom Section: Dynamic Recent Issues Table and Real-time AI Activity Feed.*
+
+---
+
+## 🚀 What is Bugsinguish? (30-Second Elevator Pitch)
+
+Traditional bug trackers like Bugzilla are passive "digital filing cabinets." When something breaks, they store a record of the complaint and wait weeks for a human engineer to manually search through past tickets, reproduce the issue, and write a fix.
+
+**Bugsinguish transforms bug tracking from a static filing cabinet into an "Active Resolution Engine."** When a bug is reported, Bugsinguish:
+1. Instantly understands what the bug means using AI (catching duplicate reports even if written in completely different words).
+2. Clones the affected code into an isolated, temporary test sandbox.
+3. Diagnoses the exact root cause and drafts a ready-to-merge Pull Request (PR) with the fix.
+4. Leaves the human engineer in control with a single click to review and merge.
+
+## ⚠️ The Problem: Why did Bugzilla fall behind?
+
+Bugzilla was revolutionary in 1998, but modern software development has outgrown its design philosophy.
+
+* **Pain Point 1 — Duplicate Ticket Nightmare:** When a popular app crashes, 500 users file tickets using different words. A human admin must read and manually tag all 500 duplicates.
+* **Pain Point 2 — Disconnected from Code ("Works on My Machine"):** Bugzilla tickets are just plain text — no branch, no environment, no way to reproduce without manual dev setup.
+* **Pain Point 3 — The Slow Manual Bottleneck:** A ticket sits in queue for days before a developer even opens the repo.
+* **Pain Point 4 — Enterprise Privacy & Storage Bloat:** Storing decades of raw code/crash logs creates compliance and security liabilities.
+* **Pain Point 5 — Intimidating 1990s Interface:** A database spreadsheet with 40+ required fields, alienating everyone but specialized QA engineers.
+
+## 🛠️ How Bugsinguish Solves Each Problem
+
+| Legacy Bugzilla Problem | How Bugsinguish Solves It |
+| :--- | :--- |
+| **Exact-match search misses duplicates.** | **Semantic Deduplication:** Reports become vector "meanings." AI detects "App crashes on login" and "Cannot sign in on iOS" are the same issue and groups them automatically. |
+| **Bugs lack live code context.** | **Ephemeral Docker Sandbox:** Spins up an isolated, lightweight container, pulls the exact branch, and executes tests. |
+| **Developers spend hours debugging.** | **Agentic Root Cause Analysis & Auto-PR:** AI reads sandbox crash logs, pinpoints the broken line, and drafts a proposed code fix. |
+| **Enterprises fear data leaks in logs.** | **Zero-Retention Privacy:** Raw code/logs discarded after resolution — only anonymized vectors kept. |
+| **Clunky, slow page reloads.** | **Real-Time Reactive UI:** SvelteKit 5 streams live AI debugging logs step-by-step via SSE. |
+
+## 🌟 How We Differ From Regular Bugzilla (Innovation Table)
+
+| Feature | Legacy Bugzilla | Bugsinguish |
+| :--- | :--- | :--- |
+| **Paradigm** | Passive Record-Keeping | Active Resolution |
+| **UI/UX** | 1990s CGI, Page Refresh | SvelteKit, Real-Time SSE Updates |
+| **Triage** | Human reads & tags | AI vector-matches & groups instantly |
+| **Context** | Copy-pasted text/logs | Live codebase connection via Sandbox |
+| **End Goal** | Human marks "Resolved" | AI drafts PR, Human clicks "Merge" |
+
+## 🏗️ System Architecture
 
 ```text
 bugsinguish/
@@ -49,79 +103,12 @@ bugsinguish/
 └── docker-compose.yml               # Local container orchestration for frontend & backend
 ```
 
----
-
-## 🌐 Live Experience and Interactive Demo
-
-Experience the future of defect tracking live in your browser:
-
-👉 **[Launch Live Bugsinguish Application](https://bugsinguish-phi.vercel.app)**
-
-Test autonomous vector deduplication, interactive 3D pipeline visualization, and single-click AI pull request generation directly on our live platform.
-
-![Bugsinguish 3D Resolution Pipeline Dashboard](docs/screenshots/dashboard_top.png)
-*Top Section: KPI Metrics, Three.js 3D Interactive Pipeline Terrain, and AI Triage Overview Donut Chart.*
-
-![Bugsinguish Recent Issues & Live AI Activity Feed](docs/screenshots/dashboard_bottom.png)
-*Bottom Section: Dynamic Recent Issues Table and Real-time AI Activity Feed.*
-
----
-
-## 🚀 Welcome to Bugsinguish
-
-Traditional bug trackers like Bugzilla operate as passive digital filing cabinets. When software breaks, legacy systems store a text record of the problem and wait weeks for human developers to manually read tickets, recreate complex environments, and write code fixes.
-
-Bugsinguish turns bug tracking into an active resolution pipeline. The moment a bug report arrives, Bugsinguish:
-
-1. Understands the semantic meaning of the issue using high dimensional vector embeddings to catch duplicate reports even when written in completely different words.
-2. Clones the target codebase branch into an isolated temporary test sandbox container to reproduce the stack trace automatically.
-3. Diagnoses the underlying root cause using Google Gemini 1.5 Pro and drafts a ready to merge Pull Request code fix.
-4. Empowers engineers with a single click to review, approve, and merge automated fixes into production.
-
----
-
-## ⚠️ The Legacy Problem
-
-Software development has outgrown the manual workflow of legacy bug tracking tools.
-
-* **Duplicate Ticket Overload:** When an app crashes, hundreds of users file tickets using different phrasing. Human administrators spend hours reading and manually linking duplicate reports.
-* **Disconnected Code Context:** Plain text stack traces lack live environment context, leading to frustrating setup bottlenecks.
-* **Slow Manual Debugging:** Tickets sit in queues for days before a developer opens the target codebase.
-* **Privacy and Storage Liabilities:** Storing decades of raw error logs creates enterprise compliance risks.
-* **Outdated User Interfaces:** Complex multi field forms alienate team members and slow down development velocity.
-
----
-
-## 🛠️ How Bugsinguish Transforms Defect Resolution
-
-| Legacy Problem | Bugsinguish Resolution |
-| :--- | :--- |
-| **Exact match search misses duplicates** | **Semantic Deduplication:** Converts reports into vector meanings via Neon pgvector to group duplicates instantly. |
-| **Bugs lack live code context** | **Ephemeral Docker Sandbox:** Spins up lightweight containers on demand to execute test suites automatically. |
-| **Hours spent manually debugging** | **Agentic Root Cause Analysis:** Gemini analyzes crash logs and drafts unified git patches ready for review. |
-| **Privacy risks from log storage** | **Zero Retention Privacy:** Ephemeral test environments and raw logs are purged immediately post resolution. |
-| **Page reloads and slow forms** | **Real Time Reactive UI:** SvelteKit 5 streams live debugging events step by step via Server Sent Events. |
-
----
-
-## 🌟 Key Platform Innovations
-
-| Feature | Legacy Bugzilla | Bugsinguish |
-| :--- | :--- | :--- |
-| **Paradigm** | Passive Record Keeping | Active Resolution Engine |
-| **User Experience** | Legacy Forms and Page Reloads | SvelteKit 5, Real Time Log Streaming |
-| **Triage** | Manual Human Tagging | Instant Vector Similarity Matching |
-| **Code Context** | Static Plain Text Logs | Live Codebase Connection via Sandbox |
-| **Resolution Target** | Human Manually Marks Resolved | AI Drafts Pull Request, Human Merges with 1 Click |
-
----
-
 ## ⚡ Quickstart Guide: Running & Accessing the Project
 
 ### 1. Live Production Deployment
-* **Live Running Web App:** [https://bugsinguish-phi.vercel.app](https://bugsinguish-phi.vercel.app)
-* **Backend API (Render):** [https://bugsinguish-api.onrender.com](https://bugsinguish-api.onrender.com) (Healthcheck: `https://bugsinguish-api.onrender.com/health`)
-* **Database:** Neon Serverless Postgres with pgvector enabled
+* **Live Web App:** [https://bugsinguish-phi.vercel.app](https://bugsinguish-phi.vercel.app)
+* **Backend API (Render):** `https://bugsinguish-api.onrender.com` (Healthcheck: `https://bugsinguish-api.onrender.com/health`)
+* **Database:** Neon Serverless Postgres with `pgvector` enabled
 
 ### 2. Local Environment Setup
 
@@ -148,7 +135,7 @@ DATABASE_URL=postgres://user:password@ep-something.neon.tech/neondb?sslmode=requ
 cd backend
 go run main.go
 ```
-The Go server automatically connects to Neon, enables pgvector, migrates the database schema, and starts on port 8080.
+The Go server automatically connects to Neon, enables `pgvector`, migrates the database schema, and starts on port `8080`.
 
 #### C. Run via Docker Compose
 ```bash
