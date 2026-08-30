@@ -90,3 +90,6 @@ The Bugsinguish dashboard provides a unified view of your project's health and A
 - **AI Triage Overview:** A visual breakdown of issue states (e.g., Duplicate Grouped, In Progress, Awaiting Review).
 - **Recent Issues:** A categorized list of bugs with their current AI resolution status (e.g., *AI Fix Ready*, *In Progress*, *Duplicate*).
 - **Live AI Activity Feed:** Real-time updates as the AI groups duplicates, creates sandboxes, identifies root causes, and drafts PRs.
+
+> [!NOTE]
+> **Dynamic Data Display:** The numbers and statistics displayed on the dashboard (such as total issues, resolution rates, etc.) are **not hardcoded**. They are dynamically generated from the test data included in the `sandbox/` folder.
