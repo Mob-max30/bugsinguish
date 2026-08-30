@@ -25,5 +25,9 @@
   "optionalDependencies": {
     "@esbuild/win32-x64": "^0.24.0",
     "@rollup/rollup-win32-x64-msvc": "^4.30.0"
+  },
+  "dependencies": {
+    "@types/three": "^0.185.4",
+    "three": "^0.185.1"
   }
 }

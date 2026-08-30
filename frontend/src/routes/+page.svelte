@@ -2,6 +2,7 @@
   import { onMount } from 'svelte';
   import type { Ticket } from '$lib/types';
   import { fetchTickets } from '$lib/api/client';
+  import Pipeline3D from '$lib/components/Pipeline3D.svelte';
 
   let tickets: Ticket[] = [
     {
@@ -173,12 +174,12 @@
     </div>
   </div>
 
-  <!-- Middle Section: Resolution Pipeline Stepper & AI Triage Donut Overview -->
+  <!-- Middle Section: Resolution Pipeline 3D Stepper & AI Triage Donut Overview -->
   <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-    <!-- Resolution Pipeline Stepper (2 Cols) -->
-    <div class="lg:col-span-2 bg-[#0e1320] border border-white/[0.08] rounded-2xl p-6 shadow-xl relative overflow-hidden flex flex-col justify-between">
+    <!-- Resolution Pipeline 3D Stepper (2 Cols) -->
+    <div class="lg:col-span-2 bg-[#0e1320] border border-white/[0.08] rounded-2xl p-6 shadow-xl relative overflow-hidden flex flex-col justify-between space-y-4">
       <div>
-        <div class="flex items-center justify-between mb-6">
+        <div class="flex items-center justify-between mb-4">
           <div class="flex items-center space-x-2">
             <span class="w-2 h-2 rounded-full bg-purple-500"></span>
             <h2 class="text-xs font-extrabold uppercase tracking-wider text-slate-300">Resolution Pipeline</h2>
@@ -186,53 +187,8 @@
           <button class="text-xs font-semibold text-indigo-400 hover:text-indigo-300 transition">View full pipeline →</button>
         </div>
 
-        <!-- 5-Node Glowing Pipeline Stepper -->
-        <div class="grid grid-cols-5 gap-2 text-center py-6 relative">
-          <!-- Node 1 -->
-          <div class="flex flex-col items-center z-10 space-y-2">
-            <div class="text-[11px] font-semibold text-slate-400">Reported</div>
-            <div class="w-12 h-12 rounded-full bg-purple-600/30 border-2 border-purple-500 flex items-center justify-center text-purple-300 text-lg shadow-lg shadow-purple-500/30">
-              📄
-            </div>
-            <div class="text-xs font-bold text-white mt-1">1,248</div>
-          </div>
-
-          <!-- Node 2 -->
-          <div class="flex flex-col items-center z-10 space-y-2">
-            <div class="text-[11px] font-semibold text-slate-400">AI Triage</div>
-            <div class="w-12 h-12 rounded-full bg-blue-600/30 border-2 border-blue-500 flex items-center justify-center text-blue-300 text-lg shadow-lg shadow-blue-500/30">
-              ⚡
-            </div>
-            <div class="text-xs font-bold text-white mt-1">512</div>
-          </div>
-
-          <!-- Node 3 -->
-          <div class="flex flex-col items-center z-10 space-y-2">
-            <div class="text-[11px] font-semibold text-slate-400">Sandbox</div>
-            <div class="w-12 h-12 rounded-full bg-teal-600/30 border-2 border-teal-500 flex items-center justify-center text-teal-300 text-lg shadow-lg shadow-teal-500/30">
-              📦
-            </div>
-            <div class="text-xs font-bold text-white mt-1">320</div>
-          </div>
-
-          <!-- Node 4 -->
-          <div class="flex flex-col items-center z-10 space-y-2">
-            <div class="text-[11px] font-semibold text-slate-400">Fix Generated</div>
-            <div class="w-12 h-12 rounded-full bg-amber-600/30 border-2 border-amber-500 flex items-center justify-center text-amber-300 text-lg shadow-lg shadow-amber-500/30">
-              🔀
-            </div>
-            <div class="text-xs font-bold text-white mt-1">187</div>
-          </div>
-
-          <!-- Node 5 -->
-          <div class="flex flex-col items-center z-10 space-y-2">
-            <div class="text-[11px] font-semibold text-slate-400">Merged</div>
-            <div class="w-12 h-12 rounded-full bg-emerald-600/30 border-2 border-emerald-500 flex items-center justify-center text-emerald-300 text-lg shadow-lg shadow-emerald-500/30">
-              ✓
-            </div>
-            <div class="text-xs font-bold text-white mt-1">98</div>
-          </div>
-        </div>
+        <!-- Three.js 3D Pipeline Canvas Component -->
+        <Pipeline3D />
       </div>
 
       <!-- Auto-resolution Rate Footer -->
@@ -258,7 +214,6 @@
       <!-- Donut & Stats Breakdown -->
       <div class="flex items-center space-x-6 py-2">
         <div class="relative w-28 h-28 shrink-0 flex items-center justify-center">
-          <!-- CSS Donut Circle Ring -->
           <div class="w-full h-full rounded-full border-[10px] border-purple-500 border-t-blue-500 border-r-emerald-500 border-b-amber-500"></div>
           <div class="absolute inset-0 flex flex-col items-center justify-center">
             <span class="text-base font-bold text-white">1,248</span>
