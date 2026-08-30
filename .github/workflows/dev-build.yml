@@ -1,0 +1,17 @@
+name: Dev Build
+
+on:
+  push:
+    branches: [ main, dev ]
+  pull_request:
+    branches: [ main, dev ]
+
+jobs:
+  build-check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Placeholder CI Step
+        run: echo "Placeholder CI build check. Real Go and Svelte checks will be added later."

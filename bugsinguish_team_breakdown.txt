@@ -1,0 +1,333 @@
+================================================================================
+                    BUGSINGUISH — TEAM WORK BREAKDOWN
+        Track 2: Developer Tool Reconstruction – Bugzilla (CloneFest)
+                  Team: Pranav (Lead) · Ujwal · Pavan
+                  Repo: github.com/Mob-max30/bugsinguish
+================================================================================
+
+0. HOW THIS DOCUMENT IS ORGANIZED
+--------------------------------------------------------------------------------
+This is a task-assignment document, not a pitch doc — the pitch is already
+covered in your README/Reacme. This file exists to answer three questions for
+every single deliverable in the project:
+
+  (a) WHO owns it
+  (b) Is it INDEPENDENT (can start immediately, no blockers) or DEPENDENT
+      (needs another person's output first)
+  (c) HOW it should be built — specifically, whether it's a task suited to
+      heavy AI-agent prompting (Antigravity + Gemini Pro) or a task better
+      done as guided step-by-step prompting with a free-tier LLM (Claude/
+      ChatGPT web UI, no IDE agent)
+
+WORK DISTRIBUTION PRINCIPLE (as requested):
+  - Pranav + Ujwal → own the majority of the AI-orchestration-heavy and
+    agentic-coding-heavy modules, since you both have Antigravity IDE with
+    Gemini Pro. These are the modules where an agentic coding assistant
+    genuinely saves the most time: large scaffolds, multi-file features,
+    realtime UI, and non-deterministic AI-pipeline logic.
+  - Pavan → owns the modules that are self-contained, well-documented,
+    and easy to build via copy-paste prompting in a free ChatGPT/Claude
+    chat window (no IDE agent needed) — mostly backend CRUD, schema setup,
+    and infra config. These don't need an agentic IDE because they're
+    single-file, well-scoped, and each has abundant boilerplate/examples
+    online that a plain chat LLM handles fine.
+
+This keeps Pavan's plate lighter in raw prompt-complexity while still giving
+him clear, demo-critical ownership (the backend is still the system's spine —
+it's just built through simpler prompts).
+
+================================================================================
+1. RUBRIC / TRACK COMPLIANCE CHECKLIST
+================================================================================
+Before task breakdown, map every deliverable back to what CloneFest is
+actually judging, so nobody builds something that doesn't score:
+
+  [ ] Not a Bugzilla clone/fork — own UX, own architecture, own workflow model
+  [ ] Reference repo (bugzilla/bugzilla) cited as "studied," not copied
+  [ ] Core bug-tracking lifecycle present: report → triage → diagnose →
+      resolve → close (this is the mandatory backbone regardless of AI
+      features layered on top)
+  [ ] Collaboration features: multiple users, ticket ownership/assignment,
+      status visibility (Kanban satisfies this)
+  [ ] Reporting/analytics: at minimum, a ticket-count-by-status view
+      (cheap to add, don't skip it — it's an explicit rubric category)
+  [ ] Performance: SSE streaming + ephemeral containers double as your
+      "performance" story — make sure this is demoable, not just claimed
+  [ ] Documentation: this file + Reacme + inline code comments
+  [ ] Innovation delta vs Bugzilla clearly stated (you already have the
+      comparison table — keep it in the final README)
+
+================================================================================
+2. SYSTEM DEPENDENCY MAP (WHO BLOCKS WHOM)
+================================================================================
+Read this before assigning start times — it tells you what can run in
+parallel on Day 1 vs what has to wait.
+
+  Ticket data model (Pavan)
+        │
+        ├──> Backend API endpoints (Pavan) ──> Frontend API client (Pranav)
+        │                                              │
+        │                                              └──> Kanban UI (Pranav)
+        │
+        ├──> Embedding + pgvector dedup (Pavan) ──> Dedup check in intake
+        │                                            flow (Pranav, frontend
+        │                                            side only — logic is
+        │                                            Pavan's)
+        │
+        └──> SSE event contract (Pavan defines payload shape) ──> SSE
+             listener component (Pranav) + SSE emitter calls from sandbox
+             (Ujwal)
+
+  Docker sandbox manager (Ujwal) ──> Crash log format (Ujwal defines) ──>
+        Gemini RCA prompt consumes that format (Ujwal, since Ujwal owns
+        the AI-diagnosis prompting track) ──> RCA JSON result posted back
+        to backend (Pavan exposes the endpoint, Ujwal calls it)
+
+  GitHub PR API integration (Ujwal, stretch goal) ──> depends on RCA output
+        existing first
+
+PRACTICAL IMPLICATION: On Day 1, all three of you can work fully in
+parallel if Pavan front-loads the ticket schema (30–45 min task) and posts
+it to the team channel before writing any other backend code — that one
+artifact unblocks both Pranav and Ujwal immediately.
+
+================================================================================
+3. PER-PERSON BREAKDOWN
+================================================================================
+
+--------------------------------------------------------------------------------
+3.1 PRANAV — Team Lead · Frontend & Realtime UX · Integration
+     Tool: Antigravity IDE + Gemini Pro (agentic prompting)
+     Branch: feature/pranav-ui
+--------------------------------------------------------------------------------
+OWNERSHIP: Everything the judge sees and clicks. Also final integration
+owner — since you're lead, you're the one who merges dev→main before demo
+and resolves cross-branch conflicts.
+
+INDEPENDENT (start Day 1, no blockers):
+  1. SvelteKit 5 + Tailwind v4 project scaffold, routing structure, base
+     layout/theme.
+  2. Bug Intake Form (/submit route) — fields: title, description, stack
+     trace/error log textarea, repo branch URL, severity. Client-side
+     validation only for now (mock submit).
+  3. Kanban board shell (/+page.svelte) with static/dummy ticket data —
+     columns: New → Triaging → Sandbox Running → Diagnosed → Resolved.
+  4. Ticket Modal component (click a card → expanded view with tabs for
+     Description / Logs / AI Diagnosis / Diff).
+  5. SSE listener component skeleton — connects to '/api/stream', renders
+     a live terminal-style log panel, no real backend needed yet (mock the
+     event source with a local dummy generator).
+
+DEPENDENT (needs Pavan/Ujwal artifacts first):
+  6. Wire the intake form to Pavan's real POST /tickets endpoint once the
+     API contract is posted (needs: request/response JSON shape).
+  7. Wire Kanban board to real ticket list from Pavan's GET /tickets
+     endpoint (needs: ticket schema).
+  8. Wire SSE listener to the real event stream once Pavan's SSE endpoint
+     and Ujwal's sandbox emit real events (needs: event payload shape from
+     section 2).
+  9. Render the AI diagnosis + diff view once Ujwal's RCA JSON structure is
+     finalized (needs: RCA JSON schema).
+  10. Final integration pass: merge all three feature branches into dev,
+      smoke-test the golden path end-to-end, fix breakage.
+
+SUGGESTED ANTIGRAVITY PROMPTS (chain these one at a time, don't paste all
+at once — let each output land before the next):
+  - "Read bugsinguish_team_breakdown.txt. I'm building the frontend for
+    Pranav's track. Scaffold a SvelteKit 5 project with Tailwind v4, a
+    layout with a top nav, and empty routes for '/' (Kanban) and '/submit'
+    (intake form)."
+  - "Build the bug intake form at src/routes/submit/+page.svelte with
+    fields: title, description, stack trace (textarea), repo branch URL,
+    severity (select). Client-side validation, no backend call yet — log
+    the payload to console on submit."
+  - "Build a Kanban board component with 5 columns matching this ticket
+    lifecycle: New, Triaging, Sandbox Running, Diagnosed, Resolved. Use
+    dummy ticket data (array of 6 mock tickets) for now. Each card shows
+    title, severity badge, and a short id."
+  - "Build a Ticket Modal component that opens when a Kanban card is
+    clicked, with tabs for Description, Logs, AI Diagnosis, and Diff.
+    Use dummy content for the Diagnosis and Diff tabs."
+  - "Build an SSE listener component that connects to '/api/stream' and
+    renders incoming messages as a live scrolling terminal-style log. For
+    now, mock the stream locally with a setInterval that emits sample log
+    lines every 800ms so I can test the UI without a backend."
+  - (Later, once real endpoints exist) "Replace the mock ticket data and
+    mock SSE source in [file] with real calls to [Pavan's endpoint URLs +
+    payload shape, pasted in]."
+
+--------------------------------------------------------------------------------
+3.2 UJWAL — Infrastructure, Agentic Sandbox & AI Diagnosis Pipeline
+     Tool: Antigravity IDE + Gemini Pro (agentic prompting)
+     Branch: feature/ujwal-sandbox
+--------------------------------------------------------------------------------
+OWNERSHIP: This is the "AI-native" heart of the pitch — the sandbox +
+reasoning pipeline is what actually differentiates you from a Bugzilla
+clone, so it gets the most prompting firepower alongside Pranav's UI.
+
+INDEPENDENT (start Day 1, no blockers):
+  1. sandbox/dummy_repo — a tiny intentionally-buggy app (e.g. calculator
+     with an unhandled divide-by-zero) that the whole demo hinges on. Keep
+     it deliberately small and reliable — this is your "golden path" prop.
+  2. sandbox/Dockerfile.dummy — minimal image to run dummy_repo's tests.
+  3. sandbox/manager.go — Go package using the Docker Engine SDK:
+     pull image → start container → clone/copy dummy_repo in → run test
+     command → capture stdout/stderr → kill + remove container. Fully
+     testable standalone via `go run` with no dependency on Pavan or
+     Pranav's code.
+  4. Crash log parser/formatter — define and document the exact JSON shape
+     you'll hand off to the Gemini RCA step (this is the artifact Pavan and
+     Pranav both eventually need — post it to the team channel early).
+  5. Gemini RCA prompt design — build and iterate the prompt template that
+     takes {bug report, crash log, relevant code} and returns strict JSON:
+     {root_cause, explanation, file, diff}. Test this standalone against
+     Google Gen AI SDK before wiring it to the sandbox.
+  6. (Stretch, only if time allows) GitHub API integration to actually open
+     a draft PR from the generated diff.
+
+DEPENDENT (needs Pavan first):
+  7. Wire manager.go's captured crash logs into a real call to Pavan's
+     backend endpoint that triggers the Gemini RCA call server-side (or,
+     if you're doing RCA directly from your Go sandbox code, wire the
+     result to Pavan's endpoint that writes it back to the ticket record —
+     confirm with Pavan which side owns the actual Gemini API call so you
+     don't duplicate it).
+  8. Emit SSE progress events at each sandbox phase (needs: Pavan's SSE
+     event contract / helper function to publish events).
+
+SUGGESTED ANTIGRAVITY PROMPTS:
+  - "Read bugsinguish_team_breakdown.txt. I'm building the sandbox +
+    diagnosis pipeline for Ujwal's track. Create sandbox/dummy_repo: a
+    tiny Python or Node calculator app with a divide function that has an
+    unhandled ZeroDivisionError bug, plus a test file that triggers it."
+  - "Write sandbox/Dockerfile.dummy that builds a minimal image capable of
+    running dummy_repo's test suite."
+  - "Write a Go package sandbox/manager.go using
+    'github.com/docker/docker/client' with a function that: pulls a base
+    image, starts a container, copies in the dummy_repo test app, runs the
+    test command, captures stdout/stderr, and then kills and removes the
+    container. Return the captured logs as a struct."
+  - "Define a Go struct and JSON schema for a 'CrashReport' — fields for
+    stdout, stderr, exit code, failing file, and timestamp — that will be
+    passed to an AI root-cause-analysis step."
+  - "Write a Gemini prompt (Go, using the Google Gen AI SDK, structured
+    JSON output) that takes a bug description, a CrashReport, and a
+    snippet of source code, and returns strict JSON: root_cause
+    (string), explanation (string), file (string), diff (string, unified
+    diff format). Include a test harness with a sample dummy_repo crash so
+    I can validate the output shape before wiring it into the pipeline."
+
+--------------------------------------------------------------------------------
+3.3 PAVAN — Backend Core, Database & API
+     Tool: Free-tier ChatGPT/Claude (plain chat prompting, no IDE agent)
+     Branch: feature/pavan-api
+--------------------------------------------------------------------------------
+OWNERSHIP: The backend spine — data model, CRUD endpoints, embeddings/
+dedup storage, and the SSE transport layer. Every task here is scoped
+tightly enough to build via a normal chat LLM: describe the file, paste
+back the code, test it, move to the next file. No multi-file agentic
+scaffolding required.
+
+INDEPENDENT (start Day 1, no blockers):
+  1. Go server bootstrap — main.go with Chi router, basic health-check
+     route, CORS middleware for local frontend dev.
+  2. models/ticket.go — the Ticket struct (id, title, description, stack
+     trace, repo branch URL, severity, status, embedding vector, diagnosis
+     JSON, diff text, created_at, updated_at). POST THIS SCHEMA TO THE
+     TEAM CHANNEL FIRST — it's the unblocking artifact for both Pranav and
+     Ujwal (see section 2).
+  3. db/neon.go — Postgres connection setup + pgvector extension
+     enablement + migration for the tickets table.
+  4. CRUD endpoints: POST /tickets, GET /tickets, GET /tickets/:id,
+     PATCH /tickets/:id (status updates). Standard REST, no AI logic yet —
+     just persistence.
+  5. Embedding generation call — wrap the Google Gen AI SDK's embedding
+     endpoint (this is a single API call, not agentic reasoning — well
+     suited to a plain prompt).
+  6. pgvector similarity query — "find tickets whose embedding is within
+     threshold X of this new embedding," wired into the POST /tickets flow
+     to do dedup-check before creating a new ticket.
+  7. SSE endpoint (GET /api/stream) — basic Go SSE handler + an in-memory
+     pub/sub so other parts of the backend (or Ujwal's sandbox code, once
+     wired) can publish progress events that get pushed to connected
+     clients. Post the exact event JSON shape to the team channel once
+     built (this unblocks Pranav's listener + Ujwal's emitters).
+  8. docker-compose.yml for local dev (frontend + backend together).
+
+DEPENDENT:
+  9. Wire the endpoint that receives Ujwal's sandbox/RCA output and writes
+     it onto the ticket record + publishes an SSE "diagnosed" event
+     (needs: Ujwal's CrashReport/RCA JSON shape).
+
+SUGGESTED CHATGPT/CLAUDE PROMPTS (paste these into a plain web chat,
+one file at a time):
+  - "I'm building a Go backend using the Chi router for a bug-tracking
+    app. Write main.go that sets up a Chi router, a health-check route at
+    GET /health, and CORS middleware allowing requests from
+    http://localhost:5173."
+  - "Write a Go struct called Ticket for a bug tracker with these fields:
+    ID (uuid), Title, Description, StackTrace, RepoBranchURL, Severity,
+    Status (enum: new, triaging, sandbox_running, diagnosed, resolved),
+    Embedding ([]float32), Diagnosis (JSON: root_cause, explanation, file,
+    diff), CreatedAt, UpdatedAt. Include JSON tags."
+  - "Write a Go file that connects to a Neon Postgres database using
+    pgx, enables the pgvector extension, and creates a migration for a
+    tickets table matching this struct: [paste struct]."
+  - "Write Chi HTTP handlers for: POST /tickets (create), GET /tickets
+    (list all), GET /tickets/:id (get one), PATCH /tickets/:id (update
+    status). Use the Ticket struct and Postgres connection from before."
+  - "Write a Go function that calls the Google Gen AI SDK to generate a
+    text embedding for a given string, returning []float32."
+  - "Write a Postgres query using pgvector's <-> operator to find the
+    closest existing ticket embedding to a new one, returning matches
+    under a similarity threshold. Wire this into the POST /tickets handler
+    so it checks for duplicates before inserting a new row."
+  - "Write a basic Server-Sent Events handler in Go using Chi at GET
+    /api/stream, with a simple in-memory pub/sub so other parts of the
+    app can call a Publish(event) function and have it pushed to all
+    connected clients as SSE messages. Show me the JSON shape you're using
+    for events."
+  - "Write a docker-compose.yml that runs a SvelteKit frontend on port
+    5173 and this Go backend on port 8080 for local development."
+
+================================================================================
+4. GIT WORKFLOW (UNCHANGED FROM ORIGINAL PLAN)
+================================================================================
+  main                  → production / final demo only
+  dev                   → integration branch, merge feature branches here
+                           first, test, then fast-forward to main
+  feature/pranav-ui      → Pranav's frontend work
+  feature/pavan-api      → Pavan's backend/db work
+  feature/ujwal-sandbox  → Ujwal's sandbox/AI-diagnosis work
+
+Rule: nobody merges their own feature branch straight to main. Everything
+lands in dev first. Pranav (lead) owns the dev→main merge before the demo.
+
+================================================================================
+5. SUGGESTED TIMELINE (ADAPT TO YOUR ACTUAL HOUR BUDGET)
+================================================================================
+  Hour 0–1   : Pavan posts Ticket schema + SSE event shape drafts to the
+               team channel (even before finishing the code) so Pranav and
+               Ujwal can start against a stable contract.
+  Hour 0–6   : All three work independent sections in parallel (3.1/3.2/3.3
+               "INDEPENDENT" items).
+  Hour 6–10  : First integration checkpoint — Pranav wires real API calls
+               where contracts are stable; Ujwal wires sandbox → backend
+               handoff; Pavan finishes SSE publish plumbing.
+  Hour 10–14 : Second integration checkpoint — full golden path (submit →
+               dedup check → sandbox → RCA → SSE stream → Kanban update)
+               run end-to-end on the dummy_repo bug.
+  Hour 14+   : Bug-fixing, polish, analytics view, demo rehearsal.
+
+================================================================================
+6. DEFINITION OF DONE (BEFORE DEMO DAY)
+================================================================================
+  [ ] Golden path runs live, start to finish, without manual intervention
+  [ ] Kanban board reflects real ticket state, not dummy data
+  [ ] SSE log stream visibly updates during sandbox + AI diagnosis
+  [ ] At least one basic analytics view (ticket count by status, minimum)
+  [ ] README/Reacme finalized with the innovation comparison table
+  [ ] This breakdown file included in the repo as documentation evidence
+      of team process (rubric gives credit for documentation)
+  [ ] dev merged into main, tagged for demo
+================================================================================
