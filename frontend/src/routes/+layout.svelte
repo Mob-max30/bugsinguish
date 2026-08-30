@@ -9,11 +9,7 @@
     { label: 'Issues', icon: '📋', href: '/issues' },
     { label: 'AI Triage', icon: '⚡', href: '/triage', badge: 'New' },
     { label: 'Sandboxes', icon: '📦', href: '/sandboxes' },
-    { label: 'Pull Requests', icon: '🔀', href: '/pull-requests' },
-    { label: 'Insights', icon: '📈', href: '/insights' },
-    { label: 'Projects', icon: '📁', href: '/projects' },
-    { label: 'Integrations', icon: '🔌', href: '/integrations' },
-    { label: 'Settings', icon: '⚙️', href: '/settings' }
+    { label: 'Pull Requests', icon: '🔀', href: '/pull-requests' }
   ];
 </script>
 
@@ -60,20 +56,11 @@
       </nav>
     </div>
 
-    <!-- User Profile Footer -->
+    <!-- System Status Footer -->
     <div class="pt-4 border-t border-white/[0.08]">
-      <!-- Profile Card -->
-      <div class="flex items-center justify-between p-2.5 rounded-xl bg-white/[0.03] border border-white/[0.06]">
-        <div class="flex items-center space-x-2.5">
-          <div class="w-8 h-8 rounded-full bg-indigo-600 flex items-center justify-center font-bold text-xs text-white">
-            PK
-          </div>
-          <div>
-            <div class="text-xs font-bold text-slate-100">Pranav K</div>
-            <div class="text-[10px] text-slate-400">Team Lead</div>
-          </div>
-        </div>
-        <span class="text-xs text-slate-500">⌄</span>
+      <div class="flex items-center space-x-2.5 px-3 py-2.5 rounded-xl bg-white/[0.03] border border-white/[0.06] text-xs">
+        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+        <span class="font-medium text-[11px] text-slate-300">AI Resolution Engine Online</span>
       </div>
     </div>
   </aside>
@@ -84,10 +71,10 @@
     <header class="h-16 border-b border-white/[0.08] bg-[#090d16]/80 backdrop-blur-md px-8 flex items-center justify-between sticky top-0 z-30">
       <div>
         <h1 class="text-base font-bold text-white flex items-center space-x-2">
-          <span>Welcome back, Pranav!</span>
-          <span class="text-base">👋</span>
+          <span>Defect Resolution Engine</span>
+          <span class="text-base">⚡</span>
         </h1>
-        <p class="text-[11px] text-slate-400">Here's what's happening across your projects today.</p>
+        <p class="text-[11px] text-slate-400">Autonomous bug triage, ephemeral sandboxes, and AI-generated PRs.</p>
       </div>
 
       <div class="flex items-center space-x-4">
@@ -95,7 +82,7 @@
         <div class="relative w-64">
           <input 
             type="text" 
-            placeholder="Search issues, projects, PRs... ⌘K"
+            placeholder="Search issues, PRs, crash logs... ⌘K"
             class="w-full bg-[#0d121f] border border-white/[0.1] rounded-xl px-3.5 py-1.5 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-indigo-500 transition"
           />
         </div>
