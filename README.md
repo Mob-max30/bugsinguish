@@ -81,3 +81,12 @@ Bugzilla was revolutionary in 1998, but modern software development has outgrown
 1. Developer reviews the AI's diagnosis and code diff on the dashboard.
 2. Developer clicks "Approve & Merge" — platform opens/merges the PR via the GitHub API.
 3. Ticket is marked RESOLVED, and raw code data is purged.
+
+## 🖥️ Dashboard Features
+
+The Bugsinguish dashboard provides a unified view of your project's health and AI triage activities:
+- **KPI Cards:** Track Total Issues, Auto PRs Created, and Mean Time to Resolve.
+- **Resolution Pipeline:** A 3D interactive terrain showing the real-time flow of bugs from report to resolution.
+- **AI Triage Overview:** A visual breakdown of issue states (e.g., Duplicate Grouped, In Progress, Awaiting Review).
+- **Recent Issues:** A categorized list of bugs with their current AI resolution status (e.g., *AI Fix Ready*, *In Progress*, *Duplicate*).
+- **Live AI Activity Feed:** Real-time updates as the AI groups duplicates, creates sandboxes, identifies root causes, and drafts PRs.
