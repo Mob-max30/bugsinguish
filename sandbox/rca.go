@@ -6,7 +6,8 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/google/genai-go"
+	"github.com/google/generative-ai-go/genai"
+	"google.golang.org/api/option"
 )
 
 // RCAResponse is the structured output from Gemini
@@ -26,7 +27,7 @@ type AIAnalyzer struct {
 func NewAIAnalyzer() (*AIAnalyzer, error) {
 	ctx := context.Background()
 	// Gen AI SDK picks up GEMINI_API_KEY from environment
-	client, err := genai.NewClient(ctx, nil)
+	client, err := genai.NewClient(ctx, option.WithAPIKey(os.Getenv("GEMINI_API_KEY")))
 	if err != nil {
 		return nil, fmt.Errorf("failed to create genai client: %w", err)
 	}
@@ -61,17 +62,16 @@ Provide your response in strict JSON format matching the following schema. Do no
 }
 `, bugDescription, report.ExitCode, report.Stdout, report.Stderr, sourceCode)
 
-	model := ai.client.Models.Get("gemini-2.5-pro")
-	resp, err := ai.client.Models.GenerateContent(ctx, model, genai.Text(prompt), &genai.GenerateContentConfig{
-		ResponseMIMEType: "application/json",
-	})
+	model := ai.client.GenerativeModel("gemini-1.5-pro")
+	model.ResponseMIMEType = "application/json"
+	resp, err := model.GenerateContent(ctx, genai.Text(prompt))
 	if err != nil {
 		return nil, fmt.Errorf("gemini api call failed: %w", err)
 	}
 
 	publishHelper(publisher, ticketID, "diagnosing", "Parsing AI diagnosis response...", nil)
 
-	if len(resp.Candidates) == 0 || len(resp.Candidates[0].Content.Parts) == 0 {
+	if len(resp.Candidates) == 0 || resp.Candidates[0].Content == nil || len(resp.Candidates[0].Content.Parts) == 0 {
 		return nil, fmt.Errorf("empty response from gemini")
 	}
 

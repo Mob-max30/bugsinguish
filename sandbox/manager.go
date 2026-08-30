@@ -58,7 +58,8 @@ func publishHelper(publisher EventPublisher, ticketID, phase, message string, da
 
 // NewDockerManager creates a new DockerManager
 func NewDockerManager() (*DockerManager, error) {
-	cli, err := client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
+	// Hardcode a newer Docker API version since v1.24 is deprecated in recent Docker Desktop builds
+	cli, err := client.NewClientWithOpts(client.FromEnv, client.WithVersion("1.41"))
 	if err != nil {
 		return nil, fmt.Errorf("failed to create docker client: %w", err)
 	}

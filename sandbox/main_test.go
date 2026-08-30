@@ -5,6 +5,8 @@ import (
 	"os"
 	"path/filepath"
 	"testing"
+
+	"github.com/joho/godotenv"
 )
 
 type MockPublisher struct {
@@ -16,6 +18,9 @@ func (m *MockPublisher) Publish(event Event) {
 }
 
 func TestEndToEndSandboxAndRCA(t *testing.T) {
+	// Attempt to load .env file if it exists
+	_ = godotenv.Load()
+
 	// Skip this test in normal CI unless we explicitly want to run it, 
 	// because it requires Docker and a Gemini API key
 	if os.Getenv("GEMINI_API_KEY") == "" {
