@@ -60,8 +60,8 @@
       </nav>
     </div>
 
-    <!-- User Profile & Plan Footer -->
-    <div class="space-y-3 pt-4 border-t border-white/[0.08]">
+    <!-- User Profile Footer -->
+    <div class="pt-4 border-t border-white/[0.08]">
       <!-- Profile Card -->
       <div class="flex items-center justify-between p-2.5 rounded-xl bg-white/[0.03] border border-white/[0.06]">
         <div class="flex items-center space-x-2.5">
@@ -74,17 +74,6 @@
           </div>
         </div>
         <span class="text-xs text-slate-500">⌄</span>
-      </div>
-
-      <!-- Enterprise Plan -->
-      <div class="p-3 rounded-xl bg-gradient-to-b from-indigo-950/40 to-purple-950/40 border border-indigo-500/20 space-y-2">
-        <div>
-          <div class="text-[11px] font-bold text-slate-200">Enterprise Plan</div>
-          <div class="text-[10px] text-slate-400">Unlimited Sandboxes</div>
-        </div>
-        <button class="w-full py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-[11px] font-bold transition shadow-md">
-          Manage Plan
-        </button>
       </div>
     </div>
   </aside>
