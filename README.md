@@ -14,10 +14,10 @@
 
 Below are screenshots from our live, working application hosted at **[https://bugsinguish-phi.vercel.app](https://bugsinguish-phi.vercel.app)**. All displayed numbers, vector similarity scores, activity logs, and status counts are **dynamically generated** from live database state and test data in the `sandbox/` folder (zero hardcoded static numbers).
 
-![Bugsinguish 3D Resolution Pipeline Dashboard](https://bugsinguish-phi.vercel.app/screenshots/dashboard_top.png)
+![Bugsinguish 3D Resolution Pipeline Dashboard](./dashboard_top.png)
 *Top Section: KPI Metrics, Three.js 3D Interactive Pipeline Terrain, and AI Triage Overview Donut Chart.*
 
-![Bugsinguish Recent Issues & Live AI Activity Feed](https://bugsinguish-phi.vercel.app/screenshots/dashboard_bottom.png)
+![Bugsinguish Recent Issues & Live AI Activity Feed](./dashboard_bottom.png)
 *Bottom Section: Dynamic Recent Issues Table and Real-time AI Activity Feed.*
 
 ---
