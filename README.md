@@ -2,17 +2,13 @@
 
 **Deconstructing Bugzilla into an AI-Native Defect Resolution Engine**
 
-*Track 2: Developer Tool Reconstruction – Bugzilla (CloneFest)*
-
-**Team:** Pranav (Lead) · Ujwal · Pavan  
-**Repo:** [https://github.com/Mob-max30/bugsinguish](https://github.com/Mob-max30/bugsinguish)  
-**Live Application:** [https://bugsinguish-phi.vercel.app](https://bugsinguish-phi.vercel.app)
+*While conventional bug trackers act as passive filing cabinets that store text complaints and wait weeks for human developers to investigate, Bugsinguish automates the entire pipeline. The moment a bug report arrives, our platform converts the report into high dimensional vector embeddings to group duplicate issues instantly, clones the codebase into an isolated temporary test sandbox to reproduce stack traces automatically, diagnoses root causes using Google Gemini 1.5 Pro, and generates ready to merge Pull Requests for single click approval.*
 
 ---
 
 ## 🖥️ Live Platform Screenshots & Dashboard Features
 
-Below are screenshots from our live, working application hosted at **[https://bugsinguish-phi.vercel.app](https://bugsinguish-phi.vercel.app)**. All displayed numbers, vector similarity scores, activity logs, and status counts are **dynamically generated** from live database state and test data in the `sandbox/` folder (zero hardcoded static numbers).
+Below are screenshots from our live, working application hosted at **[https://bugsinguish-phi.vercel.app](https://bugsinguish-phi.vercel.app)**. All displayed numbers, vector similarity scores, activity logs, and status counts are **dynamically generated** from live database state and test data in the `sandbox/` folder (zero hardcoded static numbers, you can test it for yourself xD).
 
 ![Bugsinguish 3D Resolution Pipeline Dashboard](./dashboard_top.png)
 *Top Section: KPI Metrics, Three.js 3D Interactive Pipeline Terrain, and AI Triage Overview Donut Chart.*
@@ -22,11 +18,12 @@ Below are screenshots from our live, working application hosted at **[https://bu
 
 ---
 
-## 🚀 What is Bugsinguish? (30-Second Elevator Pitch)
+## 🚀 Now, you may wonder.... what exactly is Bugsinguish 🤔? 
 
-Traditional bug trackers like Bugzilla are passive "digital filing cabinets." When something breaks, they store a record of the complaint and wait weeks for a human engineer to manually search through past tickets, reproduce the issue, and write a fix.
+Well, traditional bug trackers like Bugzilla are passive "digital filing cabinets." When something breaks, they store a record of the complaint and wait weeks for a human engineer to manually search through past tickets, reproduce the issue, and write a fix.
 
-**Bugsinguish transforms bug tracking from a static filing cabinet into an "Active Resolution Engine."** When a bug is reported, Bugsinguish:
+**Bugsinguish transforms bug tracking from a static filing cabinet into an "Active Resolution Engine."** 
+When a bug is reported, Bugsinguish:
 1. Instantly understands what the bug means using AI (catching duplicate reports even if written in completely different words).
 2. Clones the affected code into an isolated, temporary test sandbox.
 3. Diagnoses the exact root cause and drafts a ready-to-merge Pull Request (PR) with the fix.
