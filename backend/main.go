@@ -32,17 +32,19 @@ func main() {
 	r.Use(middleware.RequestID)
 	r.Use(middleware.RealIP)
 
-	// CORS: allow the local SvelteKit dev server to call this API
+	// CORS: allow any origin (local SvelteKit dev + Vercel production frontend)
 	r.Use(cors.Handler(cors.Options{
-		AllowedOrigins:   []string{"http://localhost:5173"},
-		AllowedMethods:   []string{"GET", "POST", "PATCH", "PUT", "DELETE", "OPTIONS"},
-		AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type"},
-		AllowCredentials: true,
+		AllowedOrigins:   []string{"*"},
+		AllowedMethods:   []string{"GET", "POST", "PATCH", "PUT", "DELETE", "OPTIONS", "HEAD"},
+		AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type", "X-CSRF-Token"},
+		ExposedHeaders:   []string{"Link"},
+		AllowCredentials: false,
 		MaxAge:           300,
 	}))
 
-	// Health check route
+	// Health check route (supports both GET and HEAD for Uptime monitors like UptimeRobot)
 	r.Get("/health", healthCheckHandler)
+	r.Head("/health", healthCheckHandler)
 
 	// Ticket CRUD (dedup-check happens inside CreateTicket)
 	r.Route("/tickets", func(r chi.Router) {
@@ -55,7 +57,11 @@ func main() {
 	// Live progress log stream (sandbox + AI diagnosis events)
 	r.Get("/api/stream", sse.StreamHandler)
 
-	addr := ":8080"
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8080"
+	}
+	addr := ":" + port
 	log.Printf("bugsinguish backend listening on %s", addr)
 	if err := http.ListenAndServe(addr, r); err != nil {
 		log.Fatalf("server failed: %v", err)
