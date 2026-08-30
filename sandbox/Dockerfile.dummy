@@ -1,0 +1,7 @@
+FROM python:3.9-slim
+
+WORKDIR /app
+
+# The sandbox manager will copy the files into /app
+# We just need to define the default command to run the tests
+CMD ["python", "test_calculator.py"]
