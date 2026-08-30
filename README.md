@@ -1,37 +1,28 @@
-# Bugsinguish — Pavan's Backend (feature/pavan-api)
+# Bugsinguish
 
-## Setup
-```
-cd backend
-go mod tidy      # resolves exact dependency versions from go.mod
-```
+> **Active Resolution Engine** — An AI-Native Defect Resolution and Automated Sandbox Diagnosis Platform (CloneFest Track 2: Developer Tool Reconstruction – Bugzilla).
 
-Create a `.env` (not committed) at the repo root with:
-```
-DATABASE_URL=postgres://...neon-connection-string...
-GEMINI_API_KEY=your-key-here
-```
+## 🚀 Innovation Delta vs Legacy Bugzilla
 
-Run locally:
-```
-docker-compose up --build
-```
-or just the backend directly:
-```
-cd backend
-go run main.go
-```
+| Feature | Legacy Bugzilla | Bugsinguish |
+|---|---|---|
+| **Paradigm** | Passive Record-Keeping ("Digital Filing Cabinet") | **Active Resolution Engine** (Autonomous sandbox & auto-PR) |
+| **UI/UX** | 1990s CGI Forms, Full Page Reloads | **SvelteKit 5 + Tailwind CSS v4**, Real-time SSE Stream |
+| **Triage** | Manual human reading & duplicate tagging | **Semantic Vector Deduplication** via Neon Postgres (`pgvector`) |
+| **Context** | Copy-pasted plain text stack traces | **Live Codebase Connection** via Ephemeral Docker Sandbox |
+| **End Goal** | Human developer manually marks "Resolved" | **AI drafts Pull Request**, Human developer clicks "Merge" |
 
-## File map
-- `backend/main.go` — Chi router, health check, wires up ticket + SSE routes, connects to Neon on boot
-- `backend/models/ticket.go` — Ticket struct (post this shape to the team channel)
-- `backend/db/neon.go` — Postgres/pgvector connection + tickets table migration
-- `backend/db/dedup.go` — pgvector cosine-distance duplicate lookup
-- `backend/handlers/tickets.go` — CRUD endpoints, with embedding + dedup-check wired into POST /tickets
-- `backend/embeddings/embed.go` — Gemini embedding wrapper ([]float32, 768-dim)
-- `backend/sse/stream.go` — GET /api/stream + in-memory pub/sub (post the Event JSON shape to the team channel)
-- `docker-compose.yml` — frontend + backend, Docker socket mounted for Ujwal's sandbox manager
+---
 
-## Still open
-- Item 9 (dependent): endpoint to receive Ujwal's RCA/CrashReport output and publish
-  the "diagnosed" SSE event — needs his JSON shape first.
+## 🛠️ System Architecture
+
+* **Frontend**: SvelteKit 5 + Tailwind CSS v4 — Real-time SSE terminal logs, 5-stage Kanban board, 4-tab Ticket Modal.
+* **Backend**: Go (Golang) + Chi Router — High-performance concurrent API handlers.
+* **Database**: Neon Serverless Postgres + `pgvector` — Relational state and 768-dim vector embeddings.
+* **AI Engine**: Google Gen AI SDK — Root-cause analysis (RCA) and git patch diff generation.
+* **Sandbox**: Ephemeral Docker Engine SDK — Isolated temporary containers for test reproduction.
+
+---
+
+## 📄 Team Work Breakdown & System Plan
+For the full task ownership, dependency map, and hackathon demo script, see [bugsinguish_master_readme.txt](bugsinguish_master_readme.txt).
