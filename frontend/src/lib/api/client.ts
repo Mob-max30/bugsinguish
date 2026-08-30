@@ -1,6 +1,9 @@
 import type { Ticket } from '$lib/types';
 
-const API_BASE_URL = 'http://localhost:8080';
+export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 
+  (typeof window !== 'undefined' && window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1'
+    ? 'https://bugsinguish-api.onrender.com'
+    : 'http://localhost:8080');
 
 export async function fetchTickets(): Promise<Ticket[]> {
   const res = await fetch(`${API_BASE_URL}/tickets`);
