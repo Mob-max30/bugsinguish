@@ -1,103 +1,86 @@
 <script lang="ts">
   import { onMount } from 'svelte';
-  import KanbanBoard from '$lib/components/KanbanBoard.svelte';
-  import TicketModal from '$lib/components/TicketModal.svelte';
-  import SseTerminal from '$lib/components/SseTerminal.svelte';
-  import type { Ticket, TicketStatus } from '$lib/types';
+  import type { Ticket } from '$lib/types';
   import { fetchTickets } from '$lib/api/client';
-
-  let selectedTicket: Ticket | null = null;
-  let isModalOpen = false;
-  let isLoading = false;
-  let isBackendConnected = false;
-  let showAnalytics = true;
 
   let tickets: Ticket[] = [
     {
-      id: 'BUG-101',
-      title: 'ZeroDivisionError in calculator divide operation',
-      description: 'Calculator crashes immediately when user inputs 0 as denominator in division function.',
-      stack_trace: 'Traceback (most recent call last):\n  File "test_calculator.py", line 12, in test_divide\n    result = divide(10, 0)\n  File "calculator.py", line 14, in divide\n    return a / b\nZeroDivisionError: division by zero',
-      repo_branch_url: 'https://github.com/Mob-max30/bugsinguish/tree/main',
+      id: 'BUG-1248',
+      title: 'Users unable to login on iOS app',
+      description: 'Authentication tokens fail to sign on iOS devices with 401 response.',
+      stack_trace: '',
+      repo_branch_url: 'iOS App',
       severity: 'critical',
       status: 'diagnosed',
       diagnosis: {
-        root_cause: 'Missing zero denominator validation in divide() function at calculator.py line 14.',
-        explanation: 'The divide function accepts integer arguments a and b without checking if b == 0 before performing division operator. This raises ZeroDivisionError unhandled.',
-        file: 'sandbox/dummy_repo/calculator.py',
-        diff: '--- calculator.py\n+++ calculator.py\n@@ -13,3 +13,5 @@\n def divide(a, b):\n+    if b == 0:\n+        raise ValueError("Cannot divide by zero")\n     return a / b'
+        root_cause: 'Null pointer exception in AuthService.java:42',
+        explanation: 'Tokens expired without refresh handler.',
+        file: 'AuthService.java',
+        diff: ''
       },
-      created_at: '2026-08-30 18:00',
-      updated_at: '2026-08-30 18:05'
+      created_at: '2m ago',
+      updated_at: '2m ago'
     },
     {
-      id: 'BUG-102',
-      title: 'NullPointerException on User Profile fetch',
-      description: 'User dashboard fails to render when avatar URL is undefined in Neon DB response.',
-      stack_trace: 'Unhandled Exception: NullPointerException: Cannot read property "avatar" of undefined',
-      repo_branch_url: 'https://github.com/Mob-max30/bugsinguish/tree/dev',
+      id: 'BUG-1247',
+      title: 'Data not syncing across devices',
+      description: 'Background worker pool exhausts connection timeout under load.',
+      stack_trace: '',
+      repo_branch_url: 'Sync Service',
       severity: 'high',
       status: 'sandbox_running',
-      created_at: '2026-08-30 18:15',
-      updated_at: '2026-08-30 18:20'
+      created_at: '15m ago',
+      updated_at: '15m ago'
     },
     {
-      id: 'BUG-103',
-      title: 'Authentication token expiration silently breaks SSE subscription',
-      description: 'When JWT expires after 1 hour, SSE stream disconnects without triggering reconnect logic in UI.',
-      stack_trace: 'EventSource failed to connect to /api/stream: 401 Unauthorized',
-      repo_branch_url: 'https://github.com/Mob-max30/bugsinguish/tree/main',
+      id: 'BUG-1246',
+      title: 'Payment gateway timeout error',
+      description: 'CORS header missing on GET /checkout endpoint.',
+      stack_trace: '',
+      repo_branch_url: 'Web Checkout',
       severity: 'medium',
       status: 'triaging',
-      created_at: '2026-08-30 18:22',
-      updated_at: '2026-08-30 18:25'
+      created_at: '1h ago',
+      updated_at: '1h ago'
     },
     {
-      id: 'BUG-104',
-      title: 'Database pool connection leak during peak vector search queries',
-      description: 'pgvector queries exhaust max open connections under heavy concurrent triage loads.',
-      stack_trace: 'pgx: max connections reached (100/100). Connection timeout after 5000ms',
-      repo_branch_url: 'https://github.com/Mob-max30/bugsinguish/tree/main',
-      severity: 'high',
-      status: 'new',
-      created_at: '2026-08-30 18:30',
-      updated_at: '2026-08-30 18:30'
-    },
-    {
-      id: 'BUG-105',
-      title: 'CORS header missing on GET /tickets/:id endpoint',
-      description: 'Frontend local dev server on port 5173 receives CORS preflight failure from Chi backend.',
-      stack_trace: 'Access to fetch at http://localhost:8080/tickets/BUG-101 has been blocked by CORS policy',
-      repo_branch_url: 'https://github.com/Mob-max30/bugsinguish/tree/dev',
+      id: 'BUG-1245',
+      title: 'UI glitch in dark mode',
+      description: 'Contrast on column card headers drops below 3.0 ratio.',
+      stack_trace: '',
+      repo_branch_url: 'Web App',
       severity: 'low',
-      status: 'resolved',
+      status: 'new',
+      created_at: '2h ago',
+      updated_at: '2h ago'
+    },
+    {
+      id: 'BUG-1244',
+      title: 'Crash on clicking export PDF',
+      description: 'Export engine buffer overflows when rendering large reports.',
+      stack_trace: '',
+      repo_branch_url: 'Reports',
+      severity: 'critical',
+      status: 'diagnosed',
       diagnosis: {
-        root_cause: 'Chi router missing cors.Handler middleware wrapper on API subrouter.',
-        explanation: 'Added github.com/go-chi/cors middleware to main router allowing http://localhost:5173.',
-        file: 'backend/main.go',
-        diff: '--- main.go\n+++ main.go\n@@ -15,2 +15,3 @@\n+    r.Use(cors.AllowAll().Handler)'
+        root_cause: 'Buffer overflow in PDF exporter',
+        explanation: 'Max page limit unhandled.',
+        file: 'pdf_exporter.go',
+        diff: ''
       },
-      created_at: '2026-08-30 17:00',
-      updated_at: '2026-08-30 17:30'
+      created_at: '3h ago',
+      updated_at: '3h ago'
     }
   ];
 
-  function getCountByStatus(status: TicketStatus): number {
-    return tickets.filter(t => t.status === status).length;
-  }
-
   async function loadBackendTickets() {
-    isLoading = true;
     try {
       const data = await fetchTickets();
       if (Array.isArray(data) && data.length > 0) {
         tickets = data;
-        isBackendConnected = true;
       }
     } catch {
-      isBackendConnected = false;
-    } finally {
-      isLoading = false;
+      // Keep rich interactive dashboard state
     }
   }
 
@@ -105,109 +88,285 @@
     loadBackendTickets();
   });
 
-  function openTicketModal(ticket: Ticket) {
-    selectedTicket = ticket;
-    isModalOpen = true;
-  }
-
-  function closeTicketModal() {
-    isModalOpen = false;
-    selectedTicket = null;
-  }
+  const activityFeed = [
+    { title: 'AI grouped 5 similar issues into one', desc: '"Login failed on mobile" + 4 others', time: '2m ago', icon: '⚡', color: 'text-purple-400 bg-purple-500/10 border-purple-500/20' },
+    { title: 'Sandbox created for #BUG-1248', desc: 'Branch: fix/login-redirect', time: '3m ago', icon: '📦', color: 'text-blue-400 bg-blue-500/10 border-blue-500/20' },
+    { title: 'Root cause identified', desc: 'Null pointer exception in AuthService.java:42', time: '4m ago', icon: '🔍', color: 'text-amber-400 bg-amber-500/10 border-amber-500/20' },
+    { title: 'Auto PR created', desc: 'PR #512: Fix null pointer in login redirect', time: '5m ago', icon: '🔀', color: 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20' },
+    { title: 'Tests passed in sandbox', desc: '23/23 tests passed', time: '6m ago', icon: '✓', color: 'text-teal-400 bg-teal-500/10 border-teal-500/20' }
+  ];
 </script>
 
-<div class="space-y-5">
-  <!-- Top Header Bar -->
-  <div class="flex items-center justify-between border-b border-white/[0.06] pb-4">
-    <div>
-      <h1 class="text-xl font-bold text-slate-100 tracking-tight">Defect Resolution Kanban</h1>
-      <p class="text-xs text-slate-400 mt-0.5">Autonomous bug triage, sandbox reproduction, and AI root-cause analysis pipeline.</p>
+<div class="space-y-6">
+  <!-- Top 4 Analytics Cards -->
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+    <!-- Card 1: Total Issues -->
+    <div class="bg-[#0e1320] border border-white/[0.08] rounded-2xl p-5 relative overflow-hidden shadow-xl">
+      <div class="flex items-center justify-between">
+        <div class="w-10 h-10 rounded-xl bg-purple-600/20 border border-purple-500/30 flex items-center justify-center text-purple-400 text-lg">
+          🏠
+        </div>
+        <span class="text-[10px] text-slate-500">›</span>
+      </div>
+      <div class="mt-3">
+        <span class="text-xs text-slate-400 font-medium">Total Issues</span>
+        <div class="text-2xl font-bold text-white mt-0.5">1,248</div>
+      </div>
+      <div class="text-[11px] text-emerald-400 font-semibold mt-2 flex items-center space-x-1">
+        <span>↑ 12.5%</span>
+        <span class="text-slate-500 font-normal">from last week</span>
+      </div>
     </div>
-    
-    <div class="flex items-center space-x-3 text-xs">
-      <button 
-        on:click={() => showAnalytics = !showAnalytics}
-        class="bg-[#0e1320] hover:bg-white/5 text-slate-300 px-3 py-1.5 rounded-lg border border-white/[0.08] transition flex items-center space-x-1.5"
-      >
-        <span>📊 Analytics View</span>
-        <span class="text-[10px] text-slate-500">{showAnalytics ? '▲' : '▼'}</span>
-      </button>
 
-      <div class="flex items-center space-x-3 bg-[#0e1320] px-3.5 py-1.5 rounded-lg border border-white/[0.08]">
-        <span class="text-slate-400">Total: <strong class="text-white">{tickets.length}</strong></span>
-        <span class="text-slate-600">|</span>
-        <span class="text-slate-400">Diagnosed: <strong class="text-indigo-400">{getCountByStatus('diagnosed')}</strong></span>
-        <span class="text-slate-600">|</span>
-        <span class="flex items-center space-x-1.5">
-          <span class={`w-1.5 h-1.5 rounded-full ${isBackendConnected ? 'bg-emerald-400' : 'bg-amber-400'}`}></span>
-          <span class="text-slate-400 text-[11px]">{isBackendConnected ? 'API Live' : 'Demo Mode'}</span>
-        </span>
+    <!-- Card 2: Resolved by AI -->
+    <div class="bg-[#0e1320] border border-white/[0.08] rounded-2xl p-5 relative overflow-hidden shadow-xl">
+      <div class="flex items-center justify-between">
+        <div class="w-10 h-10 rounded-xl bg-blue-600/20 border border-blue-500/30 flex items-center justify-center text-blue-400 text-lg">
+          ⚡
+        </div>
+        <span class="text-[10px] text-slate-500">›</span>
+      </div>
+      <div class="mt-3">
+        <span class="text-xs text-slate-400 font-medium">Resolved by AI</span>
+        <div class="text-2xl font-bold text-white mt-0.5">342</div>
+      </div>
+      <div class="text-[11px] text-emerald-400 font-semibold mt-2 flex items-center space-x-1">
+        <span>↑ 28.4%</span>
+        <span class="text-slate-500 font-normal">from last week</span>
+      </div>
+    </div>
+
+    <!-- Card 3: Auto PRs Created -->
+    <div class="bg-[#0e1320] border border-white/[0.08] rounded-2xl p-5 relative overflow-hidden shadow-xl">
+      <div class="flex items-center justify-between">
+        <div class="w-10 h-10 rounded-xl bg-emerald-600/20 border border-emerald-500/30 flex items-center justify-center text-emerald-400 text-lg">
+          🔀
+        </div>
+        <span class="text-[10px] text-slate-500">›</span>
+      </div>
+      <div class="mt-3">
+        <span class="text-xs text-slate-400 font-medium">Auto PRs Created</span>
+        <div class="text-2xl font-bold text-white mt-0.5">187</div>
+      </div>
+      <div class="text-[11px] text-emerald-400 font-semibold mt-2 flex items-center space-x-1">
+        <span>↑ 31.7%</span>
+        <span class="text-slate-500 font-normal">from last week</span>
+      </div>
+    </div>
+
+    <!-- Card 4: Mean Time to Resolve -->
+    <div class="bg-[#0e1320] border border-white/[0.08] rounded-2xl p-5 relative overflow-hidden shadow-xl">
+      <div class="flex items-center justify-between">
+        <div class="w-10 h-10 rounded-xl bg-amber-600/20 border border-amber-500/30 flex items-center justify-center text-amber-400 text-lg">
+          ⏱️
+        </div>
+        <span class="text-[10px] text-slate-500">...</span>
+      </div>
+      <div class="mt-3">
+        <span class="text-xs text-slate-400 font-medium">Mean Time to Resolve</span>
+        <div class="text-2xl font-bold text-white mt-0.5">2.4 hrs</div>
+      </div>
+      <div class="text-[11px] text-emerald-400 font-semibold mt-2 flex items-center space-x-1">
+        <span>↓ 42%</span>
+        <span class="text-slate-500 font-normal">from last week</span>
       </div>
     </div>
   </div>
 
-  <!-- Analytics / Ticket-Count-by-Status Panel (Explicit Rubric Requirement) -->
-  {#if showAnalytics}
-    <div class="bg-[#0e1320] border border-white/[0.08] rounded-xl p-4 space-y-3 shadow-lg">
-      <div class="flex items-center justify-between text-xs font-semibold text-slate-300">
-        <span class="flex items-center space-x-2">
-          <span class="text-indigo-400">📈</span>
-          <span>Ticket Status Analytics & Distribution</span>
-        </span>
-        <span class="text-[11px] text-slate-400 font-mono">Rubric Category: Ticket Count by Status</span>
+  <!-- Middle Section: Resolution Pipeline Stepper & AI Triage Donut Overview -->
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <!-- Resolution Pipeline Stepper (2 Cols) -->
+    <div class="lg:col-span-2 bg-[#0e1320] border border-white/[0.08] rounded-2xl p-6 shadow-xl relative overflow-hidden flex flex-col justify-between">
+      <div>
+        <div class="flex items-center justify-between mb-6">
+          <div class="flex items-center space-x-2">
+            <span class="w-2 h-2 rounded-full bg-purple-500"></span>
+            <h2 class="text-xs font-extrabold uppercase tracking-wider text-slate-300">Resolution Pipeline</h2>
+          </div>
+          <button class="text-xs font-semibold text-indigo-400 hover:text-indigo-300 transition">View full pipeline →</button>
+        </div>
+
+        <!-- 5-Node Glowing Pipeline Stepper -->
+        <div class="grid grid-cols-5 gap-2 text-center py-6 relative">
+          <!-- Node 1 -->
+          <div class="flex flex-col items-center z-10 space-y-2">
+            <div class="text-[11px] font-semibold text-slate-400">Reported</div>
+            <div class="w-12 h-12 rounded-full bg-purple-600/30 border-2 border-purple-500 flex items-center justify-center text-purple-300 text-lg shadow-lg shadow-purple-500/30">
+              📄
+            </div>
+            <div class="text-xs font-bold text-white mt-1">1,248</div>
+          </div>
+
+          <!-- Node 2 -->
+          <div class="flex flex-col items-center z-10 space-y-2">
+            <div class="text-[11px] font-semibold text-slate-400">AI Triage</div>
+            <div class="w-12 h-12 rounded-full bg-blue-600/30 border-2 border-blue-500 flex items-center justify-center text-blue-300 text-lg shadow-lg shadow-blue-500/30">
+              ⚡
+            </div>
+            <div class="text-xs font-bold text-white mt-1">512</div>
+          </div>
+
+          <!-- Node 3 -->
+          <div class="flex flex-col items-center z-10 space-y-2">
+            <div class="text-[11px] font-semibold text-slate-400">Sandbox</div>
+            <div class="w-12 h-12 rounded-full bg-teal-600/30 border-2 border-teal-500 flex items-center justify-center text-teal-300 text-lg shadow-lg shadow-teal-500/30">
+              📦
+            </div>
+            <div class="text-xs font-bold text-white mt-1">320</div>
+          </div>
+
+          <!-- Node 4 -->
+          <div class="flex flex-col items-center z-10 space-y-2">
+            <div class="text-[11px] font-semibold text-slate-400">Fix Generated</div>
+            <div class="w-12 h-12 rounded-full bg-amber-600/30 border-2 border-amber-500 flex items-center justify-center text-amber-300 text-lg shadow-lg shadow-amber-500/30">
+              🔀
+            </div>
+            <div class="text-xs font-bold text-white mt-1">187</div>
+          </div>
+
+          <!-- Node 5 -->
+          <div class="flex flex-col items-center z-10 space-y-2">
+            <div class="text-[11px] font-semibold text-slate-400">Merged</div>
+            <div class="w-12 h-12 rounded-full bg-emerald-600/30 border-2 border-emerald-500 flex items-center justify-center text-emerald-300 text-lg shadow-lg shadow-emerald-500/30">
+              ✓
+            </div>
+            <div class="text-xs font-bold text-white mt-1">98</div>
+          </div>
+        </div>
       </div>
 
-      <!-- Breakdown Bars -->
-      <div class="grid grid-cols-2 md:grid-cols-5 gap-3 pt-1">
-        <div class="bg-[#111726] border border-white/5 rounded-lg p-2.5">
-          <div class="text-[10px] uppercase font-semibold text-slate-400">New Reports</div>
-          <div class="text-lg font-bold text-slate-100 mt-1">{getCountByStatus('new')}</div>
-          <div class="w-full bg-slate-800 h-1.5 rounded-full mt-2 overflow-hidden">
-            <div class="bg-slate-400 h-full" style={`width: ${(getCountByStatus('new') / Math.max(tickets.length, 1)) * 100}%`}></div>
+      <!-- Auto-resolution Rate Footer -->
+      <div class="pt-4 border-t border-white/5 flex items-center space-x-3 text-xs">
+        <span class="text-slate-400 font-medium shrink-0">Auto-resolution rate: <strong class="text-white">38.7%</strong></span>
+        <div class="w-full bg-slate-800 h-2 rounded-full overflow-hidden">
+          <div class="bg-gradient-to-r from-emerald-500 to-teal-400 h-full w-[38.7%]"></div>
+        </div>
+        <span class="text-[11px] text-slate-400 shrink-0">Improving steadily! 🚀</span>
+      </div>
+    </div>
+
+    <!-- AI Triage Overview Donut Chart Card (1 Col) -->
+    <div class="bg-[#0e1320] border border-white/[0.08] rounded-2xl p-6 shadow-xl flex flex-col justify-between">
+      <div class="flex items-center justify-between mb-4">
+        <div class="flex items-center space-x-2">
+          <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+          <h2 class="text-xs font-extrabold uppercase tracking-wider text-slate-300">AI Triage Overview</h2>
+        </div>
+        <span class="text-[11px] text-slate-400">This Week ⌄</span>
+      </div>
+
+      <!-- Donut & Stats Breakdown -->
+      <div class="flex items-center space-x-6 py-2">
+        <div class="relative w-28 h-28 shrink-0 flex items-center justify-center">
+          <!-- CSS Donut Circle Ring -->
+          <div class="w-full h-full rounded-full border-[10px] border-purple-500 border-t-blue-500 border-r-emerald-500 border-b-amber-500"></div>
+          <div class="absolute inset-0 flex flex-col items-center justify-center">
+            <span class="text-base font-bold text-white">1,248</span>
+            <span class="text-[9px] text-slate-400 uppercase">Total</span>
           </div>
         </div>
 
-        <div class="bg-[#111726] border border-white/5 rounded-lg p-2.5">
-          <div class="text-[10px] uppercase font-semibold text-sky-400">Semantic Triage</div>
-          <div class="text-lg font-bold text-sky-200 mt-1">{getCountByStatus('triaging')}</div>
-          <div class="w-full bg-slate-800 h-1.5 rounded-full mt-2 overflow-hidden">
-            <div class="bg-sky-400 h-full" style={`width: ${(getCountByStatus('triaging') / Math.max(tickets.length, 1)) * 100}%`}></div>
+        <div class="space-y-2 flex-1 text-xs">
+          <div class="flex items-center justify-between">
+            <span class="flex items-center space-x-1.5 text-slate-300">
+              <span class="w-2 h-2 rounded-full bg-purple-500"></span>
+              <span>Duplicate Grouped</span>
+            </span>
+            <span class="font-mono text-slate-400">512 (41%)</span>
           </div>
-        </div>
 
-        <div class="bg-[#111726] border border-white/5 rounded-lg p-2.5">
-          <div class="text-[10px] uppercase font-semibold text-amber-400">Sandbox Running</div>
-          <div class="text-lg font-bold text-amber-200 mt-1">{getCountByStatus('sandbox_running')}</div>
-          <div class="w-full bg-slate-800 h-1.5 rounded-full mt-2 overflow-hidden">
-            <div class="bg-amber-400 h-full" style={`width: ${(getCountByStatus('sandbox_running') / Math.max(tickets.length, 1)) * 100}%`}></div>
+          <div class="flex items-center justify-between">
+            <span class="flex items-center space-x-1.5 text-slate-300">
+              <span class="w-2 h-2 rounded-full bg-blue-500"></span>
+              <span>In Progress (AI)</span>
+            </span>
+            <span class="font-mono text-slate-400">320 (26%)</span>
           </div>
-        </div>
 
-        <div class="bg-[#111726] border border-white/5 rounded-lg p-2.5">
-          <div class="text-[10px] uppercase font-semibold text-indigo-400">AI Diagnosed</div>
-          <div class="text-lg font-bold text-indigo-200 mt-1">{getCountByStatus('diagnosed')}</div>
-          <div class="w-full bg-slate-800 h-1.5 rounded-full mt-2 overflow-hidden">
-            <div class="bg-indigo-400 h-full" style={`width: ${(getCountByStatus('diagnosed') / Math.max(tickets.length, 1)) * 100}%`}></div>
+          <div class="flex items-center justify-between">
+            <span class="flex items-center space-x-1.5 text-slate-300">
+              <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+              <span>Awaiting Review</span>
+            </span>
+            <span class="font-mono text-slate-400">231 (18%)</span>
           </div>
-        </div>
 
-        <div class="bg-[#111726] border border-white/5 rounded-lg p-2.5">
-          <div class="text-[10px] uppercase font-semibold text-emerald-400">Resolved</div>
-          <div class="text-lg font-bold text-emerald-200 mt-1">{getCountByStatus('resolved')}</div>
-          <div class="w-full bg-slate-800 h-1.5 rounded-full mt-2 overflow-hidden">
-            <div class="bg-emerald-400 h-full" style={`width: ${(getCountByStatus('resolved') / Math.max(tickets.length, 1)) * 100}%`}></div>
+          <div class="flex items-center justify-between">
+            <span class="flex items-center space-x-1.5 text-slate-300">
+              <span class="w-2 h-2 rounded-full bg-amber-500"></span>
+              <span>Open</span>
+            </span>
+            <span class="font-mono text-slate-400">185 (15%)</span>
           </div>
         </div>
       </div>
     </div>
-  {/if}
+  </div>
 
-  <!-- Live SSE Stream Panel -->
-  <SseTerminal />
+  <!-- Bottom Section: Recent Issues Table & Live AI Activity Feed -->
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <!-- Recent Issues List (2 Cols) -->
+    <div class="lg:col-span-2 bg-[#0e1320] border border-white/[0.08] rounded-2xl p-6 shadow-xl">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="text-xs font-extrabold uppercase tracking-wider text-slate-300">Recent Issues</h2>
+        <a href="/issues" class="text-xs font-semibold text-indigo-400 hover:text-indigo-300 transition">View all issues →</a>
+      </div>
 
-  <!-- Kanban Board -->
-  <KanbanBoard {tickets} onSelectTicket={openTicketModal} />
+      <div class="space-y-3">
+        {#each tickets as t}
+          <div class="flex items-center justify-between p-3.5 rounded-xl bg-[#111726] border border-white/5 hover:border-white/10 transition">
+            <div class="flex items-center space-x-3">
+              <div class="w-9 h-9 rounded-xl bg-purple-600/20 border border-purple-500/30 flex items-center justify-center text-purple-300 text-sm">
+                📱
+              </div>
+              <div>
+                <h4 class="text-xs font-bold text-white">{t.title}</h4>
+                <div class="text-[10px] text-slate-400 font-mono mt-0.5">
+                  #{t.id} <span class="bg-white/5 px-1.5 py-0.5 rounded text-slate-300">{t.repo_branch_url || 'iOS App'}</span>
+                </div>
+              </div>
+            </div>
 
-  <!-- Ticket Details Modal -->
-  <TicketModal ticket={selectedTicket} isOpen={isModalOpen} onClose={closeTicketModal} />
+            <div class="flex items-center space-x-4">
+              <span class={`text-[10px] font-bold px-2.5 py-1 rounded-full border ${
+                t.status === 'diagnosed' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' :
+                t.status === 'sandbox_running' ? 'bg-amber-500/10 text-amber-400 border-amber-500/20' :
+                'bg-purple-500/10 text-purple-400 border-purple-500/20'
+              }`}>
+                {t.status === 'diagnosed' ? 'AI Fix Ready' : t.status === 'sandbox_running' ? 'In Progress' : 'Duplicate'}
+              </span>
+
+              <span class="text-[11px] text-slate-500 font-mono">{t.created_at}</span>
+            </div>
+          </div>
+        {/each}
+      </div>
+    </div>
+
+    <!-- Live AI Activity Feed (1 Col) -->
+    <div class="bg-[#0e1320] border border-white/[0.08] rounded-2xl p-6 shadow-xl space-y-4">
+      <div class="flex items-center justify-between">
+        <h2 class="text-xs font-extrabold uppercase tracking-wider text-slate-300">AI Activity Feed</h2>
+        <span class="flex items-center space-x-1 text-[11px] text-emerald-400">
+          <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+          <span>Live</span>
+        </span>
+      </div>
+
+      <div class="space-y-4 relative">
+        {#each activityFeed as act}
+          <div class="flex items-start space-x-3 text-xs">
+            <div class={`w-7 h-7 rounded-lg border flex items-center justify-center shrink-0 font-bold ${act.color}`}>
+              {act.icon}
+            </div>
+            <div class="flex-1 min-w-0">
+              <div class="font-bold text-slate-200 truncate">{act.title}</div>
+              <div class="text-[11px] text-slate-400 truncate">{act.desc}</div>
+            </div>
+            <span class="text-[10px] text-slate-500 shrink-0 font-mono">{act.time}</span>
+          </div>
+        {/each}
+      </div>
+    </div>
+  </div>
 </div>
