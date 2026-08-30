@@ -1,16 +1,32 @@
 <script lang="ts">
   import { onMount, onDestroy } from 'svelte';
+  import { createSseListener } from '$lib/api/sse';
 
-  export let isConnected = true;
+  export let isConnected = false;
 
   let logs: Array<{ id: string; text: string; time: string; type?: string }> = [
-    { id: '1', text: '[SYSTEM] Initializing Bugsinguish SSE Stream...', time: '18:40:01', type: 'info' },
-    { id: '2', text: '[1/4] Semantic Deduplication check ready.', time: '18:40:02', type: 'info' }
+    { id: '1', text: '[SYSTEM] Initializing Bugsinguish Realtime Stream...', time: new Date().toLocaleTimeString(), type: 'info' }
   ];
 
-  let interval: any;
+  let cleanupSse: (() => void) | null = null;
+  let fallbackInterval: any = null;
 
   onMount(() => {
+    // Attempt real SSE connection to backend
+    cleanupSse = createSseListener(
+      'http://localhost:8080/api/stream',
+      (event) => {
+        isConnected = true;
+        const text = `[${event.phase || 'EVENT'}] ${event.message || JSON.stringify(event)}`;
+        const type = event.phase === 'diagnosed' ? 'success' : event.phase === 'error' ? 'error' : 'info';
+        logs = [...logs, { id: Math.random().toString(), text, time: new Date().toLocaleTimeString(), type }];
+      },
+      () => {
+        isConnected = false;
+      }
+    );
+
+    // Fallback simulated stream for standalone UI testing
     const sampleMessages = [
       { text: '[1/4] Checking semantic vector similarity against Neon (pgvector)...', type: 'info' },
       { text: '[1/4] No duplicate ticket found (similarity score < 0.85 threshold).', type: 'success' },
@@ -23,18 +39,19 @@
     ];
 
     let index = 0;
-    interval = setInterval(() => {
-      if (index < sampleMessages.length) {
+    fallbackInterval = setInterval(() => {
+      if (!isConnected && index < sampleMessages.length) {
         const msg = sampleMessages[index];
         const time = new Date().toLocaleTimeString();
         logs = [...logs, { id: Math.random().toString(), text: msg.text, time, type: msg.type }];
         index++;
       }
-    }, 1800);
+    }, 2000);
   });
 
   onDestroy(() => {
-    if (interval) clearInterval(interval);
+    if (cleanupSse) cleanupSse();
+    if (fallbackInterval) clearInterval(fallbackInterval);
   });
 </script>
 
@@ -44,11 +61,11 @@
       <span class="w-3 h-3 rounded-full bg-rose-500 inline-block"></span>
       <span class="w-3 h-3 rounded-full bg-amber-500 inline-block"></span>
       <span class="w-3 h-3 rounded-full bg-emerald-500 inline-block"></span>
-      <span class="text-xs text-slate-400 font-sans ml-2">Live Agent Stream (/api/stream)</span>
+      <span class="text-xs text-slate-400 font-sans ml-2">Live Agent Stream (http://localhost:8080/api/stream)</span>
     </div>
     <div class="flex items-center space-x-2 text-xs">
-      <span class={`w-2 h-2 rounded-full ${isConnected ? 'bg-emerald-400 animate-pulse' : 'bg-rose-500'}`}></span>
-      <span class="text-slate-400 font-sans">{isConnected ? 'CONNECTED' : 'DISCONNECTED'}</span>
+      <span class={`w-2 h-2 rounded-full ${isConnected ? 'bg-emerald-400 animate-pulse' : 'bg-amber-500 animate-pulse'}`}></span>
+      <span class="text-slate-400 font-sans">{isConnected ? 'CONNECTED' : 'SIMULATED DEMO'}</span>
     </div>
   </div>
 

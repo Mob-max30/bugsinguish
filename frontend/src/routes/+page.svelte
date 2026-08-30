@@ -1,13 +1,17 @@
 <script lang="ts">
+  import { onMount } from 'svelte';
   import KanbanBoard from '$lib/components/KanbanBoard.svelte';
   import TicketModal from '$lib/components/TicketModal.svelte';
   import SseTerminal from '$lib/components/SseTerminal.svelte';
   import type { Ticket } from '$lib/types';
+  import { fetchTickets } from '$lib/api/client';
 
   let selectedTicket: Ticket | null = null;
   let isModalOpen = false;
+  let isLoading = false;
+  let isBackendConnected = false;
 
-  const mockTickets: Ticket[] = [
+  let tickets: Ticket[] = [
     {
       id: 'BUG-101',
       title: 'ZeroDivisionError in calculator divide operation',
@@ -19,8 +23,8 @@
       diagnosis: {
         root_cause: 'Missing zero denominator validation in divide() function at calc.py line 14.',
         explanation: 'The divide function accepts integer arguments a and b without checking if b == 0 before performing division operator. This raises ZeroDivisionError unhandled.',
-        file: 'sandbox/dummy_repo/calc.py',
-        diff: '--- calc.py\n+++ calc.py\n@@ -13,3 +13,5 @@\n def divide(a, b):\n+    if b == 0:\n+        raise ValueError("Cannot divide by zero")\n     return a / b'
+        file: 'sandbox/dummy_repo/calculator.py',
+        diff: '--- calculator.py\n+++ calculator.py\n@@ -13,3 +13,5 @@\n def divide(a, b):\n+    if b == 0:\n+        raise ValueError("Cannot divide by zero")\n     return a / b'
       },
       created_at: '2026-08-30 18:00',
       updated_at: '2026-08-30 18:05'
@@ -69,13 +73,32 @@
       diagnosis: {
         root_cause: 'Chi router missing cors.Handler middleware wrapper on API subrouter.',
         explanation: 'Added github.com/go-chi/cors middleware to main router allowing http://localhost:5173.',
-        file: 'backend/cmd/server/main.go',
+        file: 'backend/main.go',
         diff: '--- main.go\n+++ main.go\n@@ -15,2 +15,3 @@\n+    r.Use(cors.AllowAll().Handler)'
       },
       created_at: '2026-08-30 17:00',
       updated_at: '2026-08-30 17:30'
     }
   ];
+
+  async function loadBackendTickets() {
+    isLoading = true;
+    try {
+      const data = await fetchTickets();
+      if (Array.isArray(data) && data.length > 0) {
+        tickets = data;
+        isBackendConnected = true;
+      }
+    } catch {
+      isBackendConnected = false;
+    } finally {
+      isLoading = false;
+    }
+  }
+
+  onMount(() => {
+    loadBackendTickets();
+  });
 
   function openTicketModal(ticket: Ticket) {
     selectedTicket = ticket;
@@ -89,7 +112,7 @@
 </script>
 
 <div class="space-y-6">
-  <!-- Top Banner / Live SSE Stream -->
+  <!-- Top Banner -->
   <div class="flex items-center justify-between">
     <div>
       <h1 class="text-2xl font-black text-slate-100">Defect Resolution Kanban</h1>
@@ -97,9 +120,14 @@
     </div>
     
     <div class="flex items-center space-x-3 text-xs bg-slate-900 px-4 py-2 rounded-lg border border-slate-800">
-      <span class="text-slate-400">Total Tickets: <strong class="text-white">{mockTickets.length}</strong></span>
+      <span class="text-slate-400">Total Tickets: <strong class="text-white">{tickets.length}</strong></span>
       <span class="text-slate-600">|</span>
-      <span class="text-slate-400">Diagnosed: <strong class="text-indigo-400">{mockTickets.filter(t => t.status === 'diagnosed').length}</strong></span>
+      <span class="text-slate-400">Diagnosed: <strong class="text-indigo-400">{tickets.filter(t => t.status === 'diagnosed').length}</strong></span>
+      <span class="text-slate-600">|</span>
+      <span class="flex items-center space-x-1">
+        <span class={`w-2 h-2 rounded-full ${isBackendConnected ? 'bg-emerald-400' : 'bg-amber-400'}`}></span>
+        <span class="text-slate-400">{isBackendConnected ? 'API Live' : 'Demo Mode'}</span>
+      </span>
     </div>
   </div>
 
@@ -107,7 +135,7 @@
   <SseTerminal />
 
   <!-- Kanban Board -->
-  <KanbanBoard tickets={mockTickets} onSelectTicket={openTicketModal} />
+  <KanbanBoard {tickets} onSelectTicket={openTicketModal} />
 
   <!-- Ticket Details Modal -->
   <TicketModal ticket={selectedTicket} isOpen={isModalOpen} onClose={closeTicketModal} />
