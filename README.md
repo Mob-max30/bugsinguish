@@ -1,15 +1,63 @@
 # Bugsinguish 🐛🔥
 
-**Deconstructing Bugzilla into an AI-Native Defect Resolution Engine**
-
-Welcome to **Bugsinguish**, an autonomous AI defect resolution engine designed to replace legacy bug tracking tools. 
-While traditional bug trackers act as passive filing cabinets that store text complaints and wait weeks for human developers to investigate, Bugsinguish automates the entire pipeline. The moment a bug report arrives, our platform converts the report into high dimensional vector embeddings to group duplicate issues instantly, clones the codebase into an isolated temporary test sandbox to reproduce stack traces automatically, diagnoses root causes using Google Gemini 1.5 Pro, and generates ready to merge Pull Requests for single click approval.
+> **Autonomous AI Defect Resolution Engine**  
+> *CloneFest Track 2: Developer Tool Reconstruction (Bugzilla)*  
+> **Team:** Pranav (Lead) · Ujwal · Pavan  
+> 🌐 **Live Running Web App:** [https://bugsinguish-phi.vercel.app](https://bugsinguish-phi.vercel.app)  
+> ⚡ **Live Production API:** [https://bugsinguish-api.onrender.com](https://bugsinguish-api.onrender.com)  
 
 ---
 
-## 🖥️ Live Platform Screenshots & Dashboard Features
+## 📂 Monorepo File Structure & Interconnected Pipeline
 
-Below are screenshots from our live, working application. All displayed numbers, vector similarity scores, activity logs, and status counts are **dynamically generated** from live database state and test data in the `sandbox/` folder (these are zero hard coded statistics and fully generated from the test cases used. Feel free to try it out test it for yourself xD).
+```text
+bugsinguish/
+├── frontend/                        # SvelteKit 5 + Tailwind v4 + Three.js UI
+│   ├── src/
+│   │   ├── lib/
+│   │   │   ├── api/
+│   │   │   │   ├── client.ts        --> Connects to Backend REST API (POST /tickets, GET /tickets)
+│   │   │   │   └── sse.ts           --> Subscribes to Backend SSE Stream (GET /api/stream)
+│   │   │   └── components/
+│   │   │       ├── KanbanBoard.svelte  --> Displays 5-stage defect lifecycle cards
+│   │   │       ├── TicketModal.svelte  --> Renders AI diagnosis, diffs, and execution logs
+│   │   │       ├── SseTerminal.svelte  --> Monospace terminal streaming live agent steps
+│   │   │       └── Pipeline3D.svelte   --> Three.js 3D WebGL interactive resolution terrain
+│   │   └── routes/                  --> Dynamic routes (/, /issues, /triage, /sandboxes, /submit)
+│   └── package.json
+│
+├── backend/                         # Go (Golang) + Chi Router Server
+│   ├── db/
+│   │   └── neon.go                  --> Neon Postgres connection & pgvector extension migrations
+│   ├── embeddings/
+│   │   └── embed.go                 --> Google Gen AI SDK 768-dim text embedding generator
+│   ├── handlers/
+│   │   └── tickets.go               --> REST HTTP handlers & async pipeline trigger worker
+│   ├── models/
+│   │   └── ticket.go                --> Ticket, Diagnosis, & Status struct models
+│   ├── sse/
+│   │   └── stream.go                --> In-memory pub/sub broker pushing live SSE events to UI
+│   ├── main.go                      --> Main Chi router entry point listening on :8080
+│   └── go.mod
+│
+├── sandbox/                         # Ephemeral Docker Manager & AI Engine
+│   ├── dummy_repo/                  --> Test repository prop with intentional ZeroDivisionError
+│   ├── manager.go                   --> Native Docker Engine SDK (spawns & removes container)
+│   ├── rca.go                       --> Gemini 1.5 Pro prompt harness (structured JSON & diffs)
+│   └── go.mod
+│
+└── docker-compose.yml               # Local container orchestration for frontend & backend
+```
+
+---
+
+## 🌐 Live Experience and Interactive Demo
+
+Experience the future of defect tracking live in your browser:
+
+👉 **[Launch Live Bugsinguish Application](https://bugsinguish-phi.vercel.app)**
+
+Test autonomous vector deduplication, interactive 3D pipeline visualization, and single-click AI pull request generation directly on our live platform.
 
 ![Bugsinguish 3D Resolution Pipeline Dashboard](docs/screenshots/dashboard_top.png)
 *Top Section: KPI Metrics, Three.js 3D Interactive Pipeline Terrain, and AI Triage Overview Donut Chart.*
@@ -19,124 +67,61 @@ Below are screenshots from our live, working application. All displayed numbers,
 
 ---
 
-## 🚀 So What is Bugsinguish?
+## 🚀 Welcome to Bugsinguish
 
-Traditional bug trackers like Bugzilla are passive "digital filing cabinets." When something breaks, they store a record of the complaint and wait weeks for a human engineer to manually search through past tickets, reproduce the issue, and write a fix.
+Traditional bug trackers like Bugzilla operate as passive digital filing cabinets. When software breaks, legacy systems store a text record of the problem and wait weeks for human developers to manually read tickets, recreate complex environments, and write code fixes.
 
-**Bugsinguish transforms bug tracking from a static filing cabinet into an "Active Resolution Engine."** When a bug is reported, Bugsinguish:
-1. Instantly understands what the bug means using AI (catching duplicate reports even if written in completely different words).
-2. Clones the affected code into an isolated, temporary test sandbox.
-3. Diagnoses the exact root cause and drafts a ready-to-merge Pull Request (PR) with the fix.
-4. Leaves the human engineer in control with a single click to review and merge.
+Bugsinguish turns bug tracking into an active resolution pipeline. The moment a bug report arrives, Bugsinguish:
 
-## ⚠️ The Problem: Why did Bugzilla fall behind?
+1. Understands the semantic meaning of the issue using high dimensional vector embeddings to catch duplicate reports even when written in completely different words.
+2. Clones the target codebase branch into an isolated temporary test sandbox container to reproduce the stack trace automatically.
+3. Diagnoses the underlying root cause using Google Gemini 1.5 Pro and drafts a ready to merge Pull Request code fix.
+4. Empowers engineers with a single click to review, approve, and merge automated fixes into production.
 
-Bugzilla was revolutionary in 1998, but modern software development has outgrown its design philosophy.
+---
 
-* **Pain Point 1 — Duplicate Ticket Nightmare:** When a popular app crashes, 500 users file tickets using different words. A human admin must read and manually tag all 500 duplicates.
-* **Pain Point 2 — Disconnected from Code ("Works on My Machine"):** Bugzilla tickets are just plain text — no branch, no environment, no way to reproduce without manual dev setup.
-* **Pain Point 3 — The Slow Manual Bottleneck:** A ticket sits in queue for days before a developer even opens the repo.
-* **Pain Point 4 — Enterprise Privacy & Storage Bloat:** Storing decades of raw code/crash logs creates compliance and security liabilities.
-* **Pain Point 5 — Intimidating 1990s Interface:** A database spreadsheet with 40+ required fields, alienating everyone but specialized QA engineers.
+## ⚠️ The Legacy Problem
 
-## 🛠️ How Bugsinguish Solves Each Problem
+Software development has outgrown the manual workflow of legacy bug tracking tools.
 
-| Legacy Bugzilla Problem | How Bugsinguish Solves It |
+* **Duplicate Ticket Overload:** When an app crashes, hundreds of users file tickets using different phrasing. Human administrators spend hours reading and manually linking duplicate reports.
+* **Disconnected Code Context:** Plain text stack traces lack live environment context, leading to frustrating setup bottlenecks.
+* **Slow Manual Debugging:** Tickets sit in queues for days before a developer opens the target codebase.
+* **Privacy and Storage Liabilities:** Storing decades of raw error logs creates enterprise compliance risks.
+* **Outdated User Interfaces:** Complex multi field forms alienate team members and slow down development velocity.
+
+---
+
+## 🛠️ How Bugsinguish Transforms Defect Resolution
+
+| Legacy Problem | Bugsinguish Resolution |
 | :--- | :--- |
-| **Exact-match search misses duplicates.** | **Semantic Deduplication:** Reports become vector "meanings." AI detects "App crashes on login" and "Cannot sign in on iOS" are the same issue and groups them automatically. |
-| **Bugs lack live code context.** | **Ephemeral Docker Sandbox:** Spins up an isolated, lightweight container, pulls the exact branch, and executes tests. |
-| **Developers spend hours debugging.** | **Agentic Root Cause Analysis & Auto-PR:** AI reads sandbox crash logs, pinpoints the broken line, and drafts a proposed code fix. |
-| **Enterprises fear data leaks in logs.** | **Zero-Retention Privacy:** Raw code/logs discarded after resolution — only anonymized vectors kept. |
-| **Clunky, slow page reloads.** | **Real-Time Reactive UI:** SvelteKit 5 streams live AI debugging logs step-by-step via SSE. |
+| **Exact match search misses duplicates** | **Semantic Deduplication:** Converts reports into vector meanings via Neon pgvector to group duplicates instantly. |
+| **Bugs lack live code context** | **Ephemeral Docker Sandbox:** Spins up lightweight containers on demand to execute test suites automatically. |
+| **Hours spent manually debugging** | **Agentic Root Cause Analysis:** Gemini analyzes crash logs and drafts unified git patches ready for review. |
+| **Privacy risks from log storage** | **Zero Retention Privacy:** Ephemeral test environments and raw logs are purged immediately post resolution. |
+| **Page reloads and slow forms** | **Real Time Reactive UI:** SvelteKit 5 streams live debugging events step by step via Server Sent Events. |
 
-## 🌟 How We Differ From Regular Bugzilla (Including our core innovations): -
+---
+
+## 🌟 Key Platform Innovations
 
 | Feature | Legacy Bugzilla | Bugsinguish |
 | :--- | :--- | :--- |
-| **Paradigm** | Passive Record-Keeping | Active Resolution |
-| **UI/UX** | 1990s CGI, Page Refresh | SvelteKit, Real-Time SSE Updates |
-| **Triage** | Human reads & tags | AI vector-matches & groups instantly |
-| **Context** | Copy-pasted text/logs | Live codebase connection via Sandbox |
-| **End Goal** | Human marks "Resolved" | AI drafts PR, Human clicks "Merge" |
+| **Paradigm** | Passive Record Keeping | Active Resolution Engine |
+| **User Experience** | Legacy Forms and Page Reloads | SvelteKit 5, Real Time Log Streaming |
+| **Triage** | Manual Human Tagging | Instant Vector Similarity Matching |
+| **Code Context** | Static Plain Text Logs | Live Codebase Connection via Sandbox |
+| **Resolution Target** | Human Manually Marks Resolved | AI Drafts Pull Request, Human Merges with 1 Click |
 
-## 🏗️ System Architecture : -
-
-* **Frontend:** SvelteKit 5 + Tailwind CSS v4 + Bits UI — SSE for live terminal-style logs, no page reloads.
-* **Backend/API:** Go (Golang) + Chi Router — handles concurrent triage requests with high performance.
-* **Database:** Neon Serverless Postgres + pgvector — relational ticket state and semantic embeddings side-by-side.
-* **AI/Agent Layer:** Google Gen AI SDK — structured JSON outputs for predictable code patching and embeddings.
-* **Sandbox/Infra:** Native Docker Engine API (Go SDK) — short-lived containers destroyed immediately after use.
-
-### 📂 Monorepo File Structure & Interconnected Pipeline
-
-bugsinguish/
-├── 🌐 frontend/                        # SvelteKit 5 + Tailwind v4 + Three.js UI
-│   ├── src/
-│   │   ├── lib/
-│   │   │   ├── api/
-│   │   │   │   ├── client.ts           ───► Connects to Backend REST API (POST /tickets, GET /tickets)
-│   │   │   │   └── sse.ts              ───► Subscribes to Backend SSE Stream (GET /api/stream)
-│   │   │   └── components/
-│   │   │       ├── KanbanBoard.svelte  ───► Displays 5-stage defect lifecycle cards
-│   │   │       ├── TicketModal.svelte  ───► Renders AI diagnosis, diffs, and execution logs
-│   │   │       ├── SseTerminal.svelte  ───► Monospace terminal streaming live agent steps
-│   │   │       └── Pipeline3D.svelte   ───► Three.js 3D WebGL interactive resolution terrain
-│   │   └── routes/                     ───► Dynamic routes (/, /issues, /triage, /sandboxes, /submit)
-│   └── package.json
-│
-├── ⚡ backend/                         # Go (Golang) + Chi Router Server
-│   ├── db/
-│   │   └── neon.go                     ───► Neon Postgres connection & pgvector extension migrations
-│   ├── embeddings/
-│   │   └── embed.go                    ───► Google Gen AI SDK 768-dim text embedding generator
-│   ├── handlers/
-│   │   └── tickets.go                  ───► REST HTTP handlers & async pipeline trigger worker
-│   ├── models/
-│   │   └── ticket.go                   ───► Ticket, Diagnosis, & Status struct models
-│   ├── sse/
-│   │   └── stream.go                   ───► In-memory pub/sub broker pushing live SSE events to UI
-│   ├── main.go                         ───► Main Chi router entry point listening on :8080
-│   └── go.mod
-│
-├── 📦 sandbox/                         # Ephemeral Docker Manager & AI Engine
-│   ├── dummy_repo/                     # Test repository prop with intentional ZeroDivisionError
-│   ├── manager.go                      ───► Native Docker Engine SDK (spawns & removes container)
-│   ├── rca.go                          ───► Gemini 1.5 Pro prompt harness (structured JSON & diffs)
-│   └── go.mod
-│
-└── 🐳 docker-compose.yml               # Local container orchestration for frontend & backend
-
-
-## 🗺️ The Step-by-Step User Journey
-
-### PHASE 1 — Intake and Instant Triage (The Gateway)
-1. User (or automated script) submits a bug description, crash log, and repo branch URL.
-2. Go backend calls the Google Gen AI SDK to convert the text into a vector embedding.
-3. Backend queries Neon Postgres (pgvector) for similar embeddings.
-4. If a duplicate is found → user is alerted, logs appended to the existing ticket. If not → a new ticket is created with a Ticket ID.
-
-### PHASE 2 — Autonomous Reproduction (The Sandbox)
-1. Backend spins up a lightweight Docker container.
-2. Container clones the specified repo branch and sets up the environment.
-3. Container executes a test to reproduce the stack trace.
-4. Crash logs are extracted, and the container is immediately destroyed (Zero-Retention).
-
-### PHASE 3 — AI Diagnosis and Patch Generation (The RCA)
-1. Backend sends the bug report, code context, and crash logs to Google Gemini.
-2. Gemini outputs a strict JSON schema with a human-readable root cause analysis.
-3. Gemini generates a git patch/code diff to fix the bug.
-4. UI updates in real-time via SSE, showing the Draft PR forming.
-
-### PHASE 4 — Human-in-the-Loop Review (The Resolution)
-1. Developer reviews the AI's diagnosis and code diff on the dashboard.
-2. Developer clicks "Approve & Merge" — platform opens/merges the PR via the GitHub API.
-3. Ticket is marked RESOLVED, and raw code data is purged.
+---
 
 ## ⚡ Quickstart Guide: Running & Accessing the Project
 
 ### 1. Live Production Deployment
-* **Backend API (Render):** `https://bugsinguish-api.onrender.com` (Healthcheck: `https://bugsinguish-api.onrender.com/health`)
-* **Database:** Neon Serverless Postgres with `pgvector` enabled
+* **Live Running Web App:** [https://bugsinguish-phi.vercel.app](https://bugsinguish-phi.vercel.app)
+* **Backend API (Render):** [https://bugsinguish-api.onrender.com](https://bugsinguish-api.onrender.com) (Healthcheck: `https://bugsinguish-api.onrender.com/health`)
+* **Database:** Neon Serverless Postgres with pgvector enabled
 
 ### 2. Local Environment Setup
 
@@ -163,7 +148,7 @@ DATABASE_URL=postgres://user:password@ep-something.neon.tech/neondb?sslmode=requ
 cd backend
 go run main.go
 ```
-The Go server automatically connects to Neon, enables `pgvector`, migrates the database schema, and starts on port `8080`.
+The Go server automatically connects to Neon, enables pgvector, migrates the database schema, and starts on port 8080.
 
 #### C. Run via Docker Compose
 ```bash
