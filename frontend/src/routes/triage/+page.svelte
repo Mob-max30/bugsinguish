@@ -43,7 +43,7 @@
 
     <!-- Match Results -->
     <div class="space-y-3 pt-2">
-      <h4 class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Similarity Score Results (`pgvector <->` Cosine Distance)</h4>
+      <h4 class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Similarity Score Results (pgvector Cosine Distance)</h4>
       
       <div class="space-y-2">
         {#each matches as m}
